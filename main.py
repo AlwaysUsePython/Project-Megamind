@@ -96,6 +96,16 @@ def mainMenu():
         pygame.display.update()
 
 
+def movePlayer(player, planets, gap, speed):
+    player[0] += player[2]*gap*speed
+    #player[3] = 0
+    for planet in planets:
+        if planet[3] < 450:
+            if getDistance(player, planet) < 2500:
+                player[3] -= (player[1] - planet[3])*planet[1]/((getDistance(player, planet)**2)*5)
+    player[1] += player[3]*gap*speed
+    return player
+
 def firstLevel():
     font = pygame.font.Font("freesansbold.ttf",32)
     text = font.render("Level 1", True,(255,255,255))
@@ -149,7 +159,7 @@ def start1():
     prevTime = 0
     currentTime = time.time()
     speed = 100
-    babyCoords = [-200, -200, 0]
+    babyCoords = [-200, -200, 0, 0]
     fired = False
     mousePressed = False
     grabbedPlanet = 0
@@ -199,9 +209,9 @@ while not completed:
                             babyCoords = []
                             for coord in player:
                                 babyCoords.append(coord)
-                            babyCoords.append(5)
                             babyCoords[0] += 75
                             babyCoords[1] += 25
+                            babyCoords[2] = 5
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mousePressed = True
                     if grabbingPlanet == True:
@@ -243,7 +253,8 @@ while not completed:
                 collided = True
 
         if not collided:
-            babyCoords[0] += 3 * gap * speed
+            babyCoords = movePlayer(babyCoords, planets, gap, speed)
+            print(babyCoords)
             if babyCoords[0] >=1200:
                 completed = True
                 quick = False
