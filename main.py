@@ -24,7 +24,7 @@ def addPlanet(imageName,size):
 
 def importPlanets(planetArray): #planetArray must be a 2d array of planets
     planetLocations = []
-    loc = 0  # x position of next planet; gets updated after every planet placement
+    loc = 200  # x position of next planet; gets updated after every planet placement
     for planet in planets:
         planetLocations.append([planet[0], planet[1], loc, 500])
         loc = loc + (planet[1] * 2)
@@ -52,6 +52,10 @@ prevTime = 0
 currentTime = time.time()
 speed = 10
 print("starting")
+addPlanet("planet.png",100)
+addPlanet("planet.png",50)
+addPlanet("planet.png",100)
+addPlanet("planet.png",50)
 while running:
 
     prevTime = currentTime
@@ -83,8 +87,7 @@ while running:
     drawBackground()
     print("working")
     drawPlayer(player[0], player[1])
-    addPlanet("planet.png",100)
-    addPlanet("planet.png",50)
+
     setup(importPlanets(planets))
     print("skipped")
     pygame.display.update()
