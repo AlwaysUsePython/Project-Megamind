@@ -19,6 +19,18 @@ def drawBackground():
 def drawPlayer(x, y):
     screen.blit(playerImg, (x, y))
 
+def drawPlanetBarRect():
+    planetBarRect = pygame.image.load("planetBar.png")
+    planetBarRect = pygame.transform.scale(planetBarRect, (1920,200))
+    screen.blit(planetBarRect,(0,880))
+
+def drawPlanetBar(planetArray):
+    drawPlanetBarRect()
+    for planet in planetArray:
+        drawPlanet(planet)
+
+
+
 prevTime = 0
 currentTime = time.time()
 speed = 100
@@ -52,5 +64,5 @@ while running:
 
     drawBackground()
     drawPlayer(player[0], player[1])
+    drawPlanetBarRect()
     pygame.display.update()
-
