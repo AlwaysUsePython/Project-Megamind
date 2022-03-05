@@ -26,17 +26,19 @@ def addPlanet(imageName,size):
 
 def importPlanets(planetArray): #planetArray must be a 2d array of planets
     planetLocations = []
-    loc = []  # x position of next planet; gets updated after every planet placement
-    for planet in planets:
-        planetLocations.append([planet[0], planet[1], loc, 500])
-        loc = loc + (planet[1] * 2)
+    loc = [screenX - 20, screenY -75]  # x position of next planet; gets updated after every planet placement
+    for planet in planetArray:
+        planetLocations.append([planet[0], planet[1], loc[0]-planet[1], loc[1]])
+        loc[0] = loc[0] - 50 - 2 * planet[1]
+        print(loc)
     return planetLocations
 
 def drawPlanet(planet):
     planetImg = pygame.image.load(planet[0])
-    planetImg = pygame.transform.scale(planetImg, (planet[1], planet[1]))
+    planetImg = pygame.transform.scale(planetImg, (planet[1]*2, planet[1]*2))
     planetImg = pygame.transform.rotate(planetImg, 270)
-    screen.blit(planetImg,(planet[2],planet[3]))
+    planetImg = pygame.transform.rotate(planetImg, 270)
+    screen.blit(planetImg,(planet[2]-planet[1], planet[3]-planet[1]))
 
 
 def drawPlanetBarRect():
@@ -44,17 +46,16 @@ def drawPlanetBarRect():
     planetBarRect = pygame.transform.scale(planetBarRect, (screenX,150))
     screen.blit(planetBarRect,(0,screenY - 150))
 
-def drawPlanetBar(planetArray):
-    drawPlanetBarRect()
-    for planet in planetArray:
-        drawPlanet(planet)
 
 
-addPlanet("Planet1.png",100)
-addPlanet("Planet2.png",50)
-addPlanet("Planet3.png",70)
-addPlanet("Planet4.png",90)
+
+addPlanet("Planet1.png",70)
+addPlanet("Planet2.png",40)
+addPlanet("Planet3.png",50)
+addPlanet("Planet4.png",60)
+print(planets)
 planets = importPlanets(planets)
+print(planets)
 prevTime = 0
 currentTime = time.time()
 speed = 100
@@ -87,8 +88,8 @@ while running:
 
 
     drawBackground()
-    drawPlayer(player[0], player[1])
     drawPlanetBarRect()
+    drawPlayer(player[0], player[1])
     for planet in planets:
         drawPlanet(planet)
     pygame.display.update()
