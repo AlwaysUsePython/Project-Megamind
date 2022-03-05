@@ -65,7 +65,7 @@ def getDistance(baby, planet):
 
 def detectCollision(baby, planet):
     distance = getDistance(baby, planet)
-    if distance < planet[1] + 10:
+    if distance < planet[1] + 15:
         return True
     else:
         return False
