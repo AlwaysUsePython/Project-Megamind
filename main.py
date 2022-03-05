@@ -3,14 +3,16 @@ import time
 
 pygame.init()
 
-screen = pygame.display.set_mode((1920, 1080))
+screenX = 1200
+screenY = 600
+screen = pygame.display.set_mode((screenX, screenY))
 
 playerImg = pygame.image.load("spaceship.png")
-playerImg = pygame.transform.scale(playerImg, (70, 70))
+playerImg = pygame.transform.scale(playerImg, (50, 50))
 playerImg = pygame.transform.rotate(playerImg, 270)
-player = [20, 1080/2 - 35, 0, 0]
+player = [20, (screenY-150)/2 - 25, 0, 0]
 
-
+planets = []
 running = True
 
 def drawBackground():
@@ -19,10 +21,28 @@ def drawBackground():
 def drawPlayer(x, y):
     screen.blit(playerImg, (x, y))
 
+def addPlanet(imageName,size):
+    planets.append([imageName,size])
+
+def importPlanets(planetArray): #planetArray must be a 2d array of planets
+    planetLocations = []
+    loc = []  # x position of next planet; gets updated after every planet placement
+    for planet in planets:
+        planetLocations.append([planet[0], planet[1], loc, 500])
+        loc = loc + (planet[1] * 2)
+    return planetLocations
+
+def drawPlanet(planet):
+    planetImg = pygame.image.load(planet[0])
+    planetImg = pygame.transform.scale(planetImg, (planet[1], planet[1]))
+    planetImg = pygame.transform.rotate(planetImg, 270)
+    screen.blit(planetImg,(planet[2],planet[3]))
+
+
 def drawPlanetBarRect():
     planetBarRect = pygame.image.load("planetBar.png")
-    planetBarRect = pygame.transform.scale(planetBarRect, (1920,200))
-    screen.blit(planetBarRect,(0,880))
+    planetBarRect = pygame.transform.scale(planetBarRect, (screenX,150))
+    screen.blit(planetBarRect,(0,screenY - 150))
 
 def drawPlanetBar(planetArray):
     drawPlanetBarRect()
@@ -30,7 +50,11 @@ def drawPlanetBar(planetArray):
         drawPlanet(planet)
 
 
-
+addPlanet("Planet1.png",100)
+addPlanet("Planet2.png",50)
+addPlanet("Planet3.png",70)
+addPlanet("Planet4.png",90)
+planets = importPlanets(planets)
 prevTime = 0
 currentTime = time.time()
 speed = 100
@@ -65,4 +89,6 @@ while running:
     drawBackground()
     drawPlayer(player[0], player[1])
     drawPlanetBarRect()
+    for planet in planets:
+        drawPlanet(planet)
     pygame.display.update()
