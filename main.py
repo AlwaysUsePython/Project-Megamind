@@ -1,5 +1,6 @@
 import pygame
 import time
+import math
 
 pygame.init()
 
@@ -24,19 +25,29 @@ def addPlanet(imageName,size):
 
 def importPlanets(planetArray): #planetArray must be a 2d array of planets
     planetLocations = []
+<<<<<<< Updated upstream
     loc = 200  # x position of next planet; gets updated after every planet placement
     for planet in planets:
         planetLocations.append([planet[0], planet[1], loc, 500])
         loc = loc + (planet[1] * 2)
+=======
+    loc = [screenX - 20, screenY -75]  # x position of next planet; gets updated after every planet placement
+    for planet in planetArray:
+        planetLocations.append([planet[0], planet[1], loc[0]-planet[1], loc[1]])
+        loc[0] = loc[0] - 50 - 2 * planet[1]
+        print(loc)
+>>>>>>> Stashed changes
     return planetLocations
 
 def drawPlanet(planet):
     planetImg = pygame.image.load(planet[0])
-    planetImg = pygame.transform.scale(planetImg, (planet[1], planet[1]))
+    planetImg = pygame.transform.scale(planetImg, (planet[1]*2, planet[1]*2))
     planetImg = pygame.transform.rotate(planetImg, 270)
-    screen.blit(planetImg,(planet[2],planet[3]))
+    planetImg = pygame.transform.rotate(planetImg, 270)
+    screen.blit(planetImg,(planet[2]-planet[1], planet[3]-planet[1]))
 
 
+<<<<<<< Updated upstream
 def setup(locatedPlanets):
     for planet in locatedPlanets:
         drawPlanet(planet)
@@ -56,6 +67,31 @@ addPlanet("planet.png",100)
 addPlanet("planet.png",50)
 addPlanet("planet.png",100)
 addPlanet("planet.png",50)
+=======
+def drawPlanetBarRect():
+    planetBarRect = pygame.image.load("planetBar.png")
+    planetBarRect = pygame.transform.scale(planetBarRect, (screenX,150))
+    screen.blit(planetBarRect,(0,screenY - 150))
+
+
+addPlanet("Planet1.png",30)
+addPlanet("Planet2.png",30)
+addPlanet("Planet3.png",30)
+addPlanet("Planet4.png",30)
+addPlanet("Planet1.png",30)
+addPlanet("Planet1.png",30)
+addPlanet("Planet1.png",30)
+addPlanet("Planet1.png",30)
+planets = importPlanets(planets)
+prevTime = 0
+currentTime = time.time()
+speed = 100
+mousePressed = False
+grabbedPlanet = 0
+grabbingPlanet = False;
+lastCursorLoc = pygame.mouse.get_pos()
+
+>>>>>>> Stashed changes
 while running:
 
     prevTime = currentTime
@@ -79,16 +115,49 @@ while running:
             if event.key == pygame.K_d or event.key == pygame.K_a:
                 player[2] = 0
 
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mousePressed = True
+            if grabbingPlanet == True:
+                overlap = False
+                for planetIndex in (0, len(planets) - 1, 1):
+                    if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (planets[planetIndex][2] - lastCursorLoc[0]) + (planets[planetIndex][3] - lastCursorLoc[1]) * (planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][1] and planetIndex != grabbedPlanet:
+                        overlap = True
+                if not overlap:
+                    grabbingPlanet = False
+            else:
+                for planetIndex in range(len(planets)):
+                    if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0])*(planets[planetIndex][2] - lastCursorLoc[0]) + (planets[planetIndex][3] - lastCursorLoc[1])*(planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][1]:
+                        grabbedPlanet = planetIndex
+                        grabbingPlanet = True;
+
+
+        if event.type == pygame.MOUSEBUTTONUP:
+            mousePressed = False;
+
+
+
     player[0] += player[2]*gap*speed
     player[1] += player[3]*gap*speed
 
     print("working")
 
     drawBackground()
+<<<<<<< Updated upstream
     print("working")
     drawPlayer(player[0], player[1])
 
     setup(importPlanets(planets))
     print("skipped")
     pygame.display.update()
+=======
+    drawPlanetBarRect()
+    drawPlayer(player[0], player[1])
+    if grabbingPlanet:
+        planets[grabbedPlanet][2] = planets[grabbedPlanet][2] + (pygame.mouse.get_pos()[0] - lastCursorLoc[0])
+        planets[grabbedPlanet][3] = planets[grabbedPlanet][3] + (pygame.mouse.get_pos()[1] - lastCursorLoc[1])
+    for planet in planets:
+        drawPlanet(planet)
+    pygame.display.update()
+    lastCursorLoc = pygame.mouse.get_pos()
+>>>>>>> Stashed changes
 
