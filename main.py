@@ -1,6 +1,7 @@
 import pygame
 import time
 
+
 pygame.init()
 
 screenX = 1200
@@ -46,6 +47,29 @@ def drawPlanetBarRect():
     planetBarRect = pygame.transform.scale(planetBarRect, (screenX,150))
     screen.blit(planetBarRect,(0,screenY - 150))
 
+def mainMenu():
+    font = pygame.font.Font("freesansbold.ttf",32)
+    text = font.render("Project Megamind", True,(100,100,150))
+    text2 = font.render("Press Space to Begin", True, (200,200,200))
+    textRect = text.get_rect()
+    textRect.center = (600,100)
+    textRect2 = text2.get_rect()
+    textRect2.center = (600,500)
+    inMenu = True
+    while inMenu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                inMenu=False
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    inMenu=False
+                if event.key == pygame.K_SPACE:
+                    inMenu=False
+        drawBackground()
+        screen.blit(text, textRect)
+        screen.blit(text2, textRect2)
+        pygame.display.update()
 
 
 
@@ -59,12 +83,11 @@ print(planets)
 prevTime = 0
 currentTime = time.time()
 speed = 100
+mainMenu()
 while running:
-
     prevTime = currentTime
     currentTime = time.time()
     gap = currentTime - prevTime
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
