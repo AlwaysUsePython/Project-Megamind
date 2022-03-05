@@ -1,7 +1,6 @@
 import pygame
 import time
 
-
 pygame.init()
 
 screenX = 1200
@@ -14,6 +13,14 @@ playerImg = pygame.transform.rotate(playerImg, 270)
 player = [20, (screenY-150)/2 - 25, 0, 0]
 
 planets = []
+
+babyImg = pygame.image.load("Baby.png")
+babyImg = pygame.transform.scale(babyImg, (20, 40))
+babyImg = pygame.transform.rotate(babyImg, 270)
+
+def drawBaby(x, y):
+    screen.blit(babyImg, (x - 10, y - 20))
+
 running = True
 
 def drawBackground():
@@ -47,29 +54,6 @@ def drawPlanetBarRect():
     planetBarRect = pygame.transform.scale(planetBarRect, (screenX,150))
     screen.blit(planetBarRect,(0,screenY - 150))
 
-def mainMenu():
-    font = pygame.font.Font("freesansbold.ttf",32)
-    text = font.render("Project Megamind", True,(100,100,150))
-    text2 = font.render("Press Space to Begin", True, (200,200,200))
-    textRect = text.get_rect()
-    textRect.center = (600,100)
-    textRect2 = text2.get_rect()
-    textRect2.center = (600,500)
-    inMenu = True
-    while inMenu:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                inMenu=False
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    inMenu=False
-                if event.key == pygame.K_SPACE:
-                    inMenu=False
-        drawBackground()
-        screen.blit(text, textRect)
-        screen.blit(text2, textRect2)
-        pygame.display.update()
 
 
 
@@ -83,11 +67,14 @@ print(planets)
 prevTime = 0
 currentTime = time.time()
 speed = 100
-mainMenu()
+babyCoords = [-200, -200, 0]
+fired = False
 while running:
+
     prevTime = currentTime
     currentTime = time.time()
     gap = currentTime - prevTime
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -96,23 +83,36 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 running = False
 
-            if event.key == pygame.K_d:
-                player[2] = 5
-            if event.key == pygame.K_a:
-                player[2] = -5
+            if event.key == pygame.K_s:
+                player[3] = 5
+            if event.key == pygame.K_w:
+                player[3] = -5
 
         if event.type == pygame.KEYUP:
-            if event.key == pygame.K_d or event.key == pygame.K_a:
-                player[2] = 0
+            if event.key == pygame.K_w or event.key == pygame.K_s:
+                player[3] = 0
+            if event.key == pygame.K_SPACE:
+                if not fired:
+                    fired = True
+                    babyCoords = []
+                    for coord in player:
+                        babyCoords.append(coord)
+                    babyCoords.append(5)
+                    babyCoords[0] += 70
+                    babyCoords[1] += 35
 
-    player[0] += player[2]*gap*speed
-    player[1] += player[3]*gap*speed
 
+    move = player[1] + player[3]*speed*gap
+    if move < 400 and move > 0:
+        player[1] = move
 
+    babyCoords[0] += 3*gap*speed
+    print(babyCoords[2])
 
     drawBackground()
     drawPlanetBarRect()
     drawPlayer(player[0], player[1])
+    drawBaby(babyCoords[0], babyCoords[1])
     for planet in planets:
         drawPlanet(planet)
     pygame.display.update()
