@@ -1,5 +1,6 @@
 import pygame
 import time
+import math
 
 pygame.init()
 
@@ -93,6 +94,10 @@ speed = 100
 babyCoords = [-200, -200, 0]
 fired = False
 mainMenu()
+mousePressed = False
+grabbedPlanet = 0
+grabbingPlanet = False;
+lastCursorLoc = pygame.mouse.get_pos()
 while running:
 
     prevTime = currentTime
@@ -124,7 +129,30 @@ while running:
                     babyCoords.append(5)
                     babyCoords[0] += 70
                     babyCoords[1] += 35
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mousePressed = True
+            if grabbingPlanet == True:
+                overlap = False
+                for planetIndex in (0, len(planets) - 1, 1):
+                    if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
+                            planets[planetIndex][2] - lastCursorLoc[0]) + (
+                                          planets[planetIndex][3] - lastCursorLoc[1]) * (
+                                          planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][
+                        1] and planetIndex != grabbedPlanet:
+                        overlap = True
+                if not overlap:
+                    grabbingPlanet = False
+            else:
+                for planetIndex in range(len(planets)):
+                    if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
+                            planets[planetIndex][2] - lastCursorLoc[0]) + (
+                                          planets[planetIndex][3] - lastCursorLoc[1]) * (
+                                          planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][1]:
+                        grabbedPlanet = planetIndex
+                        grabbingPlanet = True;
 
+        if event.type == pygame.MOUSEBUTTONUP:
+            mousePressed = False
 
     move = player[1] + player[3]*speed*gap
     if move < 400 and move > 0:
@@ -136,7 +164,11 @@ while running:
     drawBackground()
     drawPlanetBarRect()
     drawPlayer(player[0], player[1])
+    if grabbingPlanet:
+        planets[grabbedPlanet][2] = planets[grabbedPlanet][2] + (pygame.mouse.get_pos()[0] - lastCursorLoc[0])
+        planets[grabbedPlanet][3] = planets[grabbedPlanet][3] + (pygame.mouse.get_pos()[1] - lastCursorLoc[1])
     drawBaby(babyCoords[0], babyCoords[1])
     for planet in planets:
         drawPlanet(planet)
+    lastCursorLoc = pygame.mouse.get_pos()
     pygame.display.update()
