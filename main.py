@@ -159,5 +159,112 @@ while running:
         drawPlanet(planet)
     pygame.display.update()
     lastCursorLoc = pygame.mouse.get_pos()
+<<<<<<< Updated upstream
 >>>>>>> Stashed changes
 
+=======
+    collided = False
+    global starting
+    starting = False
+
+mainMenu()
+completed = False
+while not completed:
+    running = True
+    starting = True
+    while running:
+        if starting:
+            start1()
+
+        if not collided:
+            prevTime = currentTime
+            currentTime = time.time()
+            gap = currentTime - prevTime
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    completed = True
+                    quick = True
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        running = False
+                        completed = True
+                        quick = True
+
+                    if event.key == pygame.K_s:
+                        player[3] = 5
+                    if event.key == pygame.K_w:
+                        player[3] = -5
+
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_w or event.key == pygame.K_s:
+                        player[3] = 0
+                    if event.key == pygame.K_SPACE:
+                        if (not fired) and (not grabbingPlanet):
+                            fired = True
+                            babyCoords = []
+                            for coord in player:
+                                babyCoords.append(coord)
+                            babyCoords[0] += 75
+                            babyCoords[1] += 25
+                            babyCoords[2] = 5
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mousePressed = True
+                    if grabbingPlanet == True:
+                        overlap = False
+                        for planetIndex in (0, len(planets) - 1, 1):
+                            if (math.sqrt((planets[planetIndex][2] - planets[grabbedPlanet][2]) * (
+                                    planets[planetIndex][2] - planets[grabbedPlanet][2]) + (
+                                                  planets[planetIndex][3] - planets[grabbedPlanet][3]) * (
+                                                  planets[planetIndex][3] - planets[grabbedPlanet][3]))) < planets[planetIndex][
+                                1] + planets[grabbedPlanet][1] and planetIndex != grabbedPlanet:
+                                overlap = True
+                        if not overlap:
+                            grabbingPlanet = False
+                    elif not fired:
+                        for planetIndex in range(len(planets)):
+                            if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
+                                    planets[planetIndex][2] - lastCursorLoc[0]) + (
+                                                  planets[planetIndex][3] - lastCursorLoc[1]) * (
+                                                  planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][1]:
+                                grabbedPlanet = planetIndex
+                                grabbingPlanet = True;
+
+                if event.type == pygame.MOUSEBUTTONUP:
+                    mousePressed = False
+
+            move = player[1] + player[3]*speed*gap
+            if move < 400 and move > 0:
+                player[1] = move
+
+        drawBackground()
+        drawPlanetBarRect()
+        drawPlayer(player[0], player[1])
+        if grabbingPlanet:
+            planets[grabbedPlanet][2] = planets[grabbedPlanet][2] + (pygame.mouse.get_pos()[0] - lastCursorLoc[0])
+            planets[grabbedPlanet][3] = planets[grabbedPlanet][3] + (pygame.mouse.get_pos()[1] - lastCursorLoc[1])
+        for planet in planets:
+            drawPlanet(planet)
+            if detectCollision(babyCoords, planet):
+                collided = True
+
+        if not collided:
+            if fired:
+                babyCoords = moveBaby(babyCoords, planets, gap, speed)
+                print(babyCoords)
+                if babyCoords[0] >=1200:
+                    completed = True
+                    quick = False
+        else:
+            time.sleep(2)
+            running = False
+        drawBaby(babyCoords[0], babyCoords[1])
+        lastCursorLoc = pygame.mouse.get_pos()
+        pygame.display.update()
+        if completed:
+            if not quick:
+                time.sleep(2)
+            running = False
+>>>>>>> Stashed changes
