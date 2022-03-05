@@ -96,13 +96,15 @@ def mainMenu():
         pygame.display.update()
 
 
-def movePlayer(player, planets, gap, speed):
+def moveBaby(player, planets, gap, speed):
+
     player[0] += player[2]*gap*speed
     #player[3] = 0
     for planet in planets:
         if planet[3] < 450:
             if getDistance(player, planet) < 2500:
                 player[3] -= (player[1] - planet[3])*planet[1]/((getDistance(player, planet)**2)*5)
+                player[2] -= (player[0] - planet[2])*planet[1]/((getDistance(player, planet)**2)*5)
     player[1] += player[3]*gap*speed
     return player
 
@@ -253,11 +255,12 @@ while not completed:
                 collided = True
 
         if not collided:
-            babyCoords = movePlayer(babyCoords, planets, gap, speed)
-            print(babyCoords)
-            if babyCoords[0] >=1200:
-                completed = True
-                quick = False
+            if fired:
+                babyCoords = moveBaby(babyCoords, planets, gap, speed)
+                print(babyCoords)
+                if babyCoords[0] >=1200:
+                    completed = True
+                    quick = False
         else:
             time.sleep(2)
             running = False
