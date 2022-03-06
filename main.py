@@ -402,8 +402,8 @@ def teleport(wormholePair, startIndex):
     oldYvelocity = babyCoords[3]
 
     # setting the velocity
-    babyCoords[2] = oldXvelocity * math.cos(angle) - oldYvelocity * math.sin(angle)
-    babyCoords[3] = oldXvelocity * math.sin(angle) + oldYvelocity * math.cos(angle)
+    babyCoords[2] = 0.8*(oldXvelocity * math.cos(angle) - oldYvelocity * math.sin(angle))
+    babyCoords[3] = 0.8*(oldXvelocity * math.sin(angle) + oldYvelocity * math.cos(angle))
 
 
 def drawWormholes():
@@ -1163,14 +1163,14 @@ def start11(earthX, earthY, first):
     global asteroids
     global wormholePairs
     asteroids = []
-    asteroids.append([400, 0, 50, 90])
-    asteroids.append([400, 180, 50, 90])
-    asteroids.append([400, 360, 50, 90])
-    asteroids.append([800, 200, 50, 250])
+    asteroids.append([400, 0, 30, 90])
+    asteroids.append([400, 180, 30, 90])
+    asteroids.append([400, 360, 30, 90])
+    asteroids.append([800, 200, 30, 250])
     #imageName, width, height, x, y, rotation, x2, y2, rotation2
     wormholePairs = []
-    addWormhole("Portal.png", 50, 90, 400, 90, 1, 400, 270, 1)
-    addWormhole("Portal2.png", 50, 90, 600, 410, 91, 800, 110, 1)
+    addWormhole("Portal.png", 50, 90, 400, 90, 10, 400, 270, -10)
+    addWormhole("Portal2.png", 50, 90, 540, 380, 100, 800, 110, 170)
     if first:
         player = [20, (screenY - 150) / 2 - 25, 0, 0]
         eighthLevel()
@@ -1179,11 +1179,14 @@ def start11(earthX, earthY, first):
         addPlanet("Planet2.png", 50)
         addPlanet("Planet3.png", 60)
         addPlanet("Planet4.png", 50)
+        addPlanet("BlackHole.png", 20)
         addPlanet("Earth.png", 50)
 
         planets = importPlanets(planets)
         planets[len(planets) - 1][2] = earthX
         planets[len(planets) - 1][3] = earthY
+        planets[len(planets) - 2][2] = 870
+        planets[len(planets) - 2][3] = 250
     prevTime = 0
     currentTime = time.time()
     speed = 100
@@ -2434,7 +2437,7 @@ while not finished:
                                 print((((across / width) / (down / height) > 0.8 and (across / width) / (down / height) < 1.2) \
                                     and (topLeftY < babyY + 30) \
                                     and (topLeftY + height) > babyY - 30))
-                                if ((((across / width) / (down / height) > 0.8 and (across / width) / (down / height) < 1.2) \
+                                if ((((across / width) / (down / height) > 1-(gap*speed)-0.1 and (across / width) / (down / height) < 1+(gap*speed))+0.1 \
                                     and (topLeftY < babyY + 30) \
                                      and (topLeftX - 10 < babyX) \
                                      and (topLeftX + width + 10 > babyX) \
@@ -2678,10 +2681,10 @@ while not finished:
                             print(babyY)
                             print(topLeftY + height)
                             print(
-                                (((across / width) / (down / height) > 1-(gap*speed/2) and (across / width) / (down / height) < 1+(gap*speed/2)) \
+                                (((across / width) / (down / height) > 1-(gap*speed)-0.1 and (across / width) / (down / height) < 1+(gap*speed))+0.1 \
                                  and (topLeftY < babyY + 30) \
                                  and (topLeftY + height) > babyY - 30))
-                            if ((((across / width) / (down / height) > 1-(gap*speed/2) and (across / width) / (down / height) < 1+(gap*speed/2)) \
+                            if ((((across / width) / (down / height) > 1-(gap*speed)-0.1 and (across / width) / (down / height) < 1+(gap*speed))+0.1 \
                                  and (topLeftY < babyY + 30) \
                                  and (topLeftX - 10 < babyX) \
                                  and (topLeftX + width + 10 > babyX) \
@@ -2926,10 +2929,10 @@ while not finished:
                             print(babyY)
                             print(topLeftY + height)
                             print(
-                                (((across / width) / (down / height) > 1-(gap*speed/2) and (across / width) / (down / height) < 1+(gap*speed/2)) \
+                                (((across / width) / (down / height) > 1-(gap*speed) and (across / width) / (down / height) < 1+(gap*speed)) \
                                  and (topLeftY < babyY + 30) \
                                  and (topLeftY + height) > babyY - 30))
-                            if ((((across / width) / (down / height) > 1-(gap*speed/2) and (across / width) / (down / height) < 1+(gap*speed/2)) \
+                            if ((((across / width) / (down / height) > 1-(gap*speed) and (across / width) / (down / height) < 1+(gap*speed)) \
                                  and (topLeftY < babyY + 30) \
                                  and (topLeftX - 10 < babyX) \
                                  and (topLeftX + width + 10 > babyX) \
