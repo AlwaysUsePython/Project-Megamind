@@ -1,6 +1,8 @@
 import pygame
 import time
 import math
+from pygame import mixer
+import random
 
 pygame.init()
 
@@ -12,56 +14,131 @@ playerImg = pygame.image.load("spaceship.png")
 playerImg = pygame.transform.scale(playerImg, (50, 50))
 playerImg = pygame.transform.rotate(playerImg, 270)
 planets = []
+levels = []
+level = [1, "First Launch"]
+levels.append(level)
+level = [2, "Asteroid"]
+levels.append(level)
+level = [3, "Serpentine"]
+levels.append(level)
+level = [4, "Thread the Needle"]
+levels.append(level)
+level = [5, "Black Hole"]
+levels.append(level)
+level = [6, "Level"]
+levels.append(level)
+level = [7, "Level"]
+levels.append(level)
+level = [8, "Level"]
+levels.append(level)
+level = [9, "Level"]
+levels.append(level)
+level = [10, "Level"]
+levels.append(level)
+level = [11, "Level"]
+levels.append(level)
+level = [12, "Level"]
+levels.append(level)
+
+#asteroid object is [x, y, xDimension, yDimension] ALL BY TOP LEFT
+astImg = pygame.image.load("Asteroids.png")
+
+def drawAsteroid(asteroid):
+    asteroidImg = pygame.transform.scale(astImg, (asteroid[2], asteroid[3]))
+    screen.blit(asteroidImg, (asteroid[0], asteroid[1]))
+
+exp1 = pygame.image.load("Explosion1.png")
+exp2 = pygame.image.load("Explosion2.png")
+exp3 = pygame.image.load("Explosion3.png")
+exp1 = pygame.transform.scale(exp1, (50, 50))
+exp2 = pygame.transform.scale(exp2, (50, 50))
+exp3 = pygame.transform.scale(exp3, (50, 50))
+
+def drawExplosion(x, y, num):
+    if num == 1:
+        img = exp1
+    elif num == 2:
+        img = exp2
+    else:
+        img = exp3
+    screen.blit(img, (x-15, y -15))
+
 
 originalBabyImg = pygame.image.load("Baby.png")
 babyImg = pygame.transform.scale(originalBabyImg, (30, 30))
 bigBabyImg = pygame.transform.scale(originalBabyImg, (200, 200))
 
+
+explainScreen = pygame.image.load("Explanation.png")
+explainScreen = pygame.transform.scale(explainScreen, (1000, 500))
+
 def drawBaby(x, y):
     screen.blit(babyImg, (x - 15, y - 15))
 
+def drawExplainScreen():
+    screen.blit(explainScreen, (100, 50))
+
 def drawBigBaby(x, y):
     screen.blit(bigBabyImg, (x - 100, y - 100))
-running = True
+
 
 def drawBackground():
     screen.fill((0, 0, 0))
 
+
 def drawPlayer(x, y):
     screen.blit(playerImg, (x, y))
 
-def addPlanet(imageName,size):
-    planets.append([imageName,size])
 
-def importPlanets(planetArray): #planetArray must be a 2d array of planets
+def addPlanet(imageName, size):
+    planets.append([imageName, size])
+
+
+def importPlanets(planetArray):  # planetArray must be a 2d array of planets
     planetLocations = []
-    loc = [screenX - 20, screenY -75]  # x position of next planet; gets updated after every planet placement
+    loc = [1055, 525]  # x position of next planet; gets updated after every planet placement
     for planet in planetArray:
-        planetLocations.append([planet[0], planet[1], loc[0]-planet[1], loc[1]])
-        loc[0] = loc[0] - 50 - 2 * planet[1]
-        print(loc)
+        planetLocations.append([planet[0], planet[1], loc[0] - planet[1], loc[1]])
+        if loc == [1055, 525]:
+            loc[0] = loc[0] - 270
+        elif loc == [1055-270, 525]:
+            loc[0] = loc[0] - 280
+        elif loc == [1055 - 270 - 280, 525]:
+            loc[0] -= 240
     return planetLocations
+
 
 def drawPlanet(planet):
     planetImg = pygame.image.load(planet[0])
-    planetImg = pygame.transform.scale(planetImg, (planet[1]*2, planet[1]*2))
-    planetImg = pygame.transform.rotate(planetImg, 90)
-    planetImg = pygame.transform.rotate(planetImg, 90)
-    screen.blit(planetImg,(planet[2]-planet[1], planet[3]-planet[1]))
+    planetImg = pygame.transform.scale(planetImg, (planet[1] * 2, planet[1] * 2))
+    if planet[0] != "Earth.png" and planet[0] != "Planet1.png" and planet[0] != "Planet2.png":
+        planetImg = pygame.transform.rotate(planetImg, 90)
+        planetImg = pygame.transform.rotate(planetImg, 90)
+    screen.blit(planetImg, (planet[2] - planet[1], planet[3] - planet[1]))
 
 
-def drawBigPlanet(x, y):
-    bigPlanet = pygame.image.load("Planet1.png")
-    bigPlanet = pygame.transform.scale(bigPlanet, (400, 400))
-    screen.blit(bigPlanet, (x-200, y-200))
+def drawBigPlanet(x, y, planetNum):
+    if planetNum == 1:
+        bigPlanet = pygame.image.load("Planet1.png")
+    if planetNum == 2:
+        bigPlanet = pygame.image.load("Planet2.png")
+    if planetNum == 3:
+        bigPlanet = pygame.image.load("Planet3.png")
+    if planetNum == 4:
+        bigPlanet = pygame.image.load("Planet4.png")
+    bigPlanet = pygame.transform.scale(bigPlanet, (300, 300))
+    screen.blit(bigPlanet, (x - 150, y - 150))
+
 
 def drawPlanetBarRect():
     planetBarRect = pygame.image.load("planetBar.png")
-    planetBarRect = pygame.transform.scale(planetBarRect, (screenX,150))
-    screen.blit(planetBarRect,(0,screenY - 150))
+    planetBarRect = pygame.transform.scale(planetBarRect, (screenX, 150))
+    screen.blit(planetBarRect, (0, screenY - 150))
+
 
 def getDistance(baby, planet):
-    return math.sqrt((babyCoords[0]-planet[2])**2 + (babyCoords[1] - planet[3])**2)
+    return math.sqrt((babyCoords[0] - planet[2]) ** 2 + (babyCoords[1] - planet[3]) ** 2)
+
 
 def detectCollision(baby, planet):
     distance = getDistance(baby, planet)
@@ -70,204 +147,1178 @@ def detectCollision(baby, planet):
     else:
         return False
 
+
 def mainMenu():
-    font = pygame.font.Font("freesansbold.ttf",32)
-    text = font.render("Project Megamind", True,(100,100,150))
-    text2 = font.render("Press Space to Begin", True, (200,200,200))
+    global finished
+    font = pygame.font.Font("freesansbold.ttf", 32)
+    text = font.render("Evacuation", True, (255, 255, 255))
+    text2 = font.render("Press Space to Begin", True, (200, 200, 200))
+    text3 = font.render("Press Enter for Level Select", True, (200, 200, 200))
     textRect = text.get_rect()
-    textRect.center = (600,100)
+    textRect.center = (600, 100)
     textRect2 = text2.get_rect()
-    textRect2.center = (600,500)
+    textRect2.center = (600, 500)
+    textRect3 = text3.get_rect()
+    textRect3.center = (600, 550)
     inMenu = True
+    levelSelectBoolean = False
     while inMenu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                inMenu=False
+                inMenu = False
+                pygame.quit()
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_ESCAPE:
-                    inMenu=False
+                    inMenu = False
+                    pygame.quit()
                 if event.key == pygame.K_SPACE:
-                    inMenu=False
+                    inMenu = False
+                    return 1
+                if event.key == pygame.K_RETURN:
+                    inMenu = False
+                    levelSelectBoolean = True
+
         drawBackground()
         screen.blit(text, textRect)
         screen.blit(text2, textRect2)
+        screen.blit(text3, textRect3)
         drawBigBaby(600, 300)
         pygame.display.update()
+        if levelSelectBoolean:
+            return levelSelect()
+
+
+def levelSelect():
+    inLevelSelect = True
+    while inLevelSelect:
+        drawBackground()
+        for row in range(1,4,1):
+            for column in range(4):
+                drawBox(24 + 24*column + 270*column,24+24*row+120*row,row*4 - 5 + column+1)
+        pygame.display.update()
+        mainMenuBoolean = False
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                inLevelSelect = False
+                pygame.quit()
+
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_ESCAPE:
+                    inLevelSelect = False
+                    mainMenuBoolean = True
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                pos = pygame.mouse.get_pos()
+                for row in range(1, 4, 1):
+                    for column in range(4):
+                        if (pos[0] > 24 + 24*column + 270*column and pos[0] < 24 + 270 + 24*column + 270*column) \
+                                    and (pos[1]>24+24*row+120*row and pos[1] < 24 + 120 + 24*row+120*row):
+                            return row*4 - 5 + column + 2
+                            print ("levelnum")
+                            print (row*4-5+column)
+                            inLevelSelect = False
+
+        if(mainMenuBoolean):
+            mainMenu()
+
+def drawEndScreen():
+    wait = True
+    while wait:
+        box = pygame.image.load("box.png")
+        width = 660
+        height = 250
+        box = pygame.transform.scale(box,(width,height))
+        screen.blit(box,((1200-width)/2,(600-height)/2-20))
+        font = pygame.font.Font("freesansbold.ttf", 50)
+        text = font.render("You saved the baby!", True, (255, 255, 255))
+        textRect = text.get_rect()
+        textRect.center = ((600, 220))
+        screen.blit(text,textRect)
+        font2 = pygame.font.Font("freesansbold.ttf", 36)
+        text2 = font2.render("Press Space to play the next level", True, (240, 240, 240))
+        textRect2 = text2.get_rect()
+        textRect2.center = ((600, 300))
+        screen.blit(text2,textRect2)
+        font3 = pygame.font.Font("freesansbold.ttf", 36)
+        text3 = font3.render("Press Enter for level select", True, (240, 240, 240))
+        textRect3 = text3.get_rect()
+        textRect3.center = ((600, 350))
+        screen.blit(text3,textRect3)
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                wait = False
+                pygame.quit()
+
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_ESCAPE:
+                    wait = False
+                    pygame.quit()
+                if event.key == pygame.K_SPACE:
+                    wait = False
+                    return -1
+                if event.key == pygame.K_RETURN:
+                    return levelSelect()
+                    wait = False
+
+
+def drawBox(x,y,levelNum):##270 x 120
+    box = pygame.image.load("box.png")
+    screen.blit(box,(x,y))
+    font = pygame.font.Font("freesansbold.ttf", 24)
+    print(levelNum)
+    levels[levelNum]
+    content = "" + str(levels[levelNum][0]) + ": " + levels[levelNum][1]
+    text = font.render(content, True, (255, 255, 255))
+    textRect = text.get_rect()
+    xCenter = x + 135
+    yCenter = y + 60
+    textRect.center=((xCenter,yCenter))
+    screen.blit(text,textRect)
 
 
 def moveBaby(player, planets, gap, speed):
-
-    player[0] += player[2]*gap*speed
-    #player[3] = 0
+    # player[3] = 0
     for planet in planets:
         if planet[3] < 450:
             if getDistance(player, planet) < 2500:
-                player[3] -= (player[1] - planet[3])*planet[1]/((getDistance(player, planet)**2)*5)
-                player[2] -= (player[0] - planet[2])*planet[1]/((getDistance(player, planet)**2)*5)
-    player[1] += player[3]*gap*speed
+                player[3] -= (player[1] - planet[3]) * planet[1] * (gap*speed) / ((getDistance(player, planet) ** 2)*8)
+                player[2] -= (player[0] - planet[2]) * planet[1] * (gap*speed) / ((getDistance(player, planet) ** 2)*8)
+
+    player[1] += player[3] * gap * speed
+    player[0] += player[2] * gap * speed
     return player
 
-def firstLevel():
-    font = pygame.font.Font("freesansbold.ttf",32)
-    text = font.render("Level 1", True,(255,255,255))
-    text2 = font.render("Press Space to Begin", True, (200,200,200))
+def drawExplanation1():
+    font = pygame.font.Font("freesansbold.ttf", 32)
+    text = font.render("Get the baby to planet Earth in one shot!", True, (255, 255, 255))
+    text1 = font.render("Use the spacebar to launch the baby", True, (255, 255, 255))
+    text2 = font.render("W and S move the ship on the y axis", True, (255, 255, 255))
+    text3 = font.render("Press Space to Continue", True, (200, 200, 200))
     textRect = text.get_rect()
-    textRect.center = (600,100)
+    textRect.center = (600, 100)
+    textRect1 = text1.get_rect()
+    textRect1.center = (600, 250)
     textRect2 = text2.get_rect()
-    textRect2.center = (600,500)
+    textRect2.center = (600, 350)
+    textRect3 = text3.get_rect()
+    textRect3.center = (600, 500)
+    screen.blit(text, textRect)
+    screen.blit(text1, textRect1)
+    screen.blit(text2, textRect2)
+    screen.blit(text3, textRect3)
+
+
+def drawExplanation2():
+    font = pygame.font.Font("freesansbold.ttf", 32)
+    text = font.render("You need to curve your one shot around the asteroids!", True, (255, 255, 255))
+    text1 = font.render("Planets have gravitational pull.", True, (255, 255, 255))
+    text2 = font.render("Use that to your advantage!", True, (255, 255, 255))
+    text4 = font.render("Drag the planets onto the screen with your mouse", True, (255, 255, 255))
+    text3 = font.render("Press Space to Continue", True, (200, 200, 200))
+    textRect = text.get_rect()
+    textRect.center = (600, 100)
+    textRect1 = text1.get_rect()
+    textRect1.center = (600, 250)
+    textRect2 = text2.get_rect()
+    textRect2.center = (600, 350)
+    textRect3 = text3.get_rect()
+    textRect3.center = (600, 500)
+    textRect4 = text4.get_rect()
+    textRect4.center = (600, 450)
+    screen.blit(text, textRect)
+    screen.blit(text1, textRect1)
+    screen.blit(text2, textRect2)
+    screen.blit(text3, textRect3)
+    screen.blit(text4, textRect4)
+
+
+def drawExplanation3():
+    font = pygame.font.Font("freesansbold.ttf", 32)
+    text = font.render("This one's a bit harder!", True, (255, 255, 255))
+    text1 = font.render("You may need to place a few more planets.", True, (255, 255, 255))
+    text2 = font.render("Larger planets have larger gravitational pulls!", True, (255, 255, 255))
+    text3 = font.render("Press Space to Continue", True, (200, 200, 200))
+    textRect = text.get_rect()
+    textRect.center = (600, 100)
+    textRect1 = text1.get_rect()
+    textRect1.center = (600, 250)
+    textRect2 = text2.get_rect()
+    textRect2.center = (600, 350)
+    textRect3 = text3.get_rect()
+    textRect3.center = (600, 500)
+    screen.blit(text, textRect)
+    screen.blit(text1, textRect1)
+    screen.blit(text2, textRect2)
+    screen.blit(text3, textRect3)
+
+
+def drawExplanation4():
+    font = pygame.font.Font("freesansbold.ttf", 32)
+    text = font.render("Now you have to make some tight turns!", True, (255, 255, 255))
+    text1 = font.render("Use the circular shape of the planets' orbits", True, (255, 255, 255))
+    text2 = font.render("to navigate around the bends!", True, (255, 255, 255))
+    text3 = font.render("Press Space to Continue", True, (200, 200, 200))
+    textRect = text.get_rect()
+    textRect.center = (600, 100)
+    textRect1 = text1.get_rect()
+    textRect1.center = (600, 250)
+    textRect2 = text2.get_rect()
+    textRect2.center = (600, 350)
+    textRect3 = text3.get_rect()
+    textRect3.center = (600, 500)
+    screen.blit(text, textRect)
+    screen.blit(text1, textRect1)
+    screen.blit(text2, textRect2)
+    screen.blit(text3, textRect3)
+
+def firstLevel():
+    global finished
+    font = pygame.font.Font("freesansbold.ttf", 32)
+    text = font.render("Level 1", True, (255, 255, 255))
+    text2 = font.render("Press Space to Begin", True, (200, 200, 200))
+    textRect = text.get_rect()
+    textRect.center = (600, 100)
+    textRect2 = text2.get_rect()
+    textRect2.center = (600, 500)
     inMenu = True
     while inMenu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                inMenu=False
+                inMenu = False
+                pygame.quit()
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_ESCAPE:
-                    inMenu=False
+                    inMenu = False
+                    pygame.quit()
                 if event.key == pygame.K_SPACE:
-                    inMenu=False
+                    inMenu = False
         drawBackground()
         screen.blit(text, textRect)
         screen.blit(text2, textRect2)
-        drawBigPlanet(600, 300)
+        drawBigPlanet(600, 300, 1)
         pygame.display.update()
 
 
 
-def start1():
-    global planets
-    global player
-    global prevTime
-    global currentTime
-    global speed
-    global fired
-    global babyCoords
-    global mousePressed
-    global grabbedPlanet
-    global grabbingPlanet
-    global lastCursorLoc
-    global collided
-    planets = []
-    firstLevel()
-    player = [20, (screenY - 150) / 2 - 25, 0, 0]
-    addPlanet("Planet1.png",70)
-    addPlanet("Planet2.png",40)
-    addPlanet("Planet3.png",50)
-    addPlanet("Planet4.png",60)
-    print(planets)
-    planets = importPlanets(planets)
-    print(planets)
-    prevTime = 0
-    currentTime = time.time()
-    speed = 100
-    babyCoords = [-200, -200, 0, 0]
-    fired = False
-    mousePressed = False
-    grabbedPlanet = 0
-    grabbingPlanet = False
-    lastCursorLoc = pygame.mouse.get_pos()
-    collided = False
-    global starting
-    starting = False
+def secondLevel():
+    global finished
+    font = pygame.font.Font("freesansbold.ttf", 32)
+    text = font.render("Level 2", True, (255, 255, 255))
+    text2 = font.render("Press Space to Begin", True, (200, 200, 200))
+    textRect = text.get_rect()
+    textRect.center = (600, 100)
+    textRect2 = text2.get_rect()
+    textRect2.center = (600, 500)
+    inMenu = True
+    while inMenu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                inMenu = False
+                pygame.quit()
 
-mainMenu()
-completed = False
-while not completed:
-    running = True
-    starting = True
-    while running:
-        if starting:
-            start1()
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_ESCAPE:
+                    inMenu = False
+                    pygame.quit()
+                if event.key == pygame.K_SPACE:
+                    inMenu = False
+        drawBackground()
+        screen.blit(text, textRect)
+        screen.blit(text2, textRect2)
+        drawBigPlanet(600, 300, 2)
+        pygame.display.update()
 
-        if not collided:
-            prevTime = currentTime
+
+
+def thirdLevel():
+    global finished
+    font = pygame.font.Font("freesansbold.ttf", 32)
+    text = font.render("Level 3", True, (255, 255, 255))
+    text2 = font.render("Press Space to Begin", True, (200, 200, 200))
+    textRect = text.get_rect()
+    textRect.center = (600, 100)
+    textRect2 = text2.get_rect()
+    textRect2.center = (600, 500)
+    inMenu = True
+    while inMenu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                inMenu = False
+                pygame.quit()
+
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_ESCAPE:
+                    inMenu = False
+                    pygame.quit()
+                if event.key == pygame.K_SPACE:
+                    inMenu = False
+        drawBackground()
+        screen.blit(text, textRect)
+        screen.blit(text2, textRect2)
+        drawBigPlanet(600, 300, 3)
+        pygame.display.update()
+
+def fourthLevel():
+    global finished
+    font = pygame.font.Font("freesansbold.ttf", 32)
+    text = font.render("Level 4", True, (255, 255, 255))
+    text2 = font.render("Press Space to Begin", True, (200, 200, 200))
+    textRect = text.get_rect()
+    textRect.center = (600, 100)
+    textRect2 = text2.get_rect()
+    textRect2.center = (600, 500)
+    inMenu = True
+    while inMenu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                inMenu = False
+                pygame.quit()
+
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_ESCAPE:
+                    inMenu = False
+                    pygame.quit()
+                if event.key == pygame.K_SPACE:
+                    inMenu = False
+        drawBackground()
+        screen.blit(text, textRect)
+        screen.blit(text2, textRect2)
+        drawBigPlanet(600, 300, 4)
+        pygame.display.update()
+
+
+def detectAsteroidCollision(baby, asteroid):
+    for i in range(asteroid[2]):
+        if math.sqrt((baby[0] - asteroid[0]-i)**2 + (baby[1] - asteroid[1])**2) < 15:
+            return True
+        if math.sqrt((baby[0] - asteroid[0]-i)**2 + (baby[1] - asteroid[1]-asteroid[3])**2) < 15:
+            return True
+    for i in range(asteroid[3]):
+        if math.sqrt((baby[0] - asteroid[0]-asteroid[2])**2 + (baby[1] - asteroid[1]-i)**2) < 15:
+            return True
+        if math.sqrt((baby[0] - asteroid[0])**2 + (baby[1] - asteroid[1]-i)**2) < 15:
+            return True
+    return False
+
+finished = False
+
+levelIndex = mainMenu()
+while not finished:
+
+
+    print("mmset")
+    completed = False
+    first = True
+
+    # LEVEL 1
+
+    if (levelIndex == 1):
+        def start1(earthX, earthY, first):
+            global planets
+            global player
+            global prevTime
+            global currentTime
+            global speed
+            global fired
+            global babyCoords
+            global mousePressed
+            global grabbedPlanet
+            global grabbingPlanet
+            global lastCursorLoc
+            global collided
+            global asteroids
+            asteroids = []
+            firstLevel()
+            if first:
+                planets = []
+                player = [20, (screenY - 150) / 2 - 25, 0, 0]
+                addPlanet("Earth.png", 100)
+                planets = importPlanets(planets)
+                planets[len(planets) - 1][2] = earthX
+                planets[len(planets) - 1][3] = earthY
+            prevTime = 0
             currentTime = time.time()
-            gap = currentTime - prevTime
+            speed = 100
+            babyCoords = [-200, -200, 0, 0]
+            fired = False
+            mousePressed = False
+            grabbedPlanet = 0
+            grabbingPlanet = False
+            lastCursorLoc = pygame.mouse.get_pos()
+            collided = False
+            global starting
+            starting = False
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                    completed = True
-                    quick = True
+    while not completed and not finished and levelIndex == 1:
+        explained = False
+        running = True
+        starting = True
+        while running and levelIndex == 1:
+            if starting:
+                start1(1200, 110, first)
+                initial = 0
+                if first:
+                    first = False
 
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
+            if not collided:
+                prevTime = currentTime
+                currentTime = time.time()
+                gap = currentTime - prevTime
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
                         running = False
                         completed = True
+                        finished = True
+                        pygame.quit()
                         quick = True
 
-                    if event.key == pygame.K_s:
-                        player[3] = 5
-                    if event.key == pygame.K_w:
-                        player[3] = -5
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            running = False
+                            completed = True
+                            quick = True
+                            finished = True
+                            pygame.quit()
 
-                if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_w or event.key == pygame.K_s:
-                        player[3] = 0
-                    if event.key == pygame.K_SPACE:
-                        if not fired:
-                            fired = True
-                            babyCoords = []
-                            for coord in player:
-                                babyCoords.append(coord)
-                            babyCoords[0] += 75
-                            babyCoords[1] += 25
-                            babyCoords[2] = 5
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    mousePressed = True
-                    if grabbingPlanet == True:
-                        overlap = False
-                        for planetIndex in (0, len(planets) - 1, 1):
-                            if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
-                                    planets[planetIndex][2] - lastCursorLoc[0]) + (
-                                                  planets[planetIndex][3] - lastCursorLoc[1]) * (
-                                                  planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][
-                                1] and planetIndex != grabbedPlanet:
-                                overlap = True
-                        if not overlap:
-                            grabbingPlanet = False
-                    else:
-                        for planetIndex in range(len(planets)):
-                            if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
-                                    planets[planetIndex][2] - lastCursorLoc[0]) + (
-                                                  planets[planetIndex][3] - lastCursorLoc[1]) * (
-                                                  planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][1]:
-                                grabbedPlanet = planetIndex
-                                grabbingPlanet = True;
+                        if event.key == pygame.K_s:
+                            player[3] = 5
+                        if event.key == pygame.K_w:
+                            player[3] = -5
 
-                if event.type == pygame.MOUSEBUTTONUP:
-                    mousePressed = False
+                    if event.type == pygame.KEYUP:
+                        if event.key == pygame.K_w or event.key == pygame.K_s:
+                            player[3] = 0
+                        if event.key == pygame.K_SPACE:
+                            if not explained:
+                                explained = True
+                            elif not fired:
+                                fired = True
+                                babyCoords = []
+                                for coord in player:
+                                    babyCoords.append(coord)
+                                babyCoords[0] += 75
+                                babyCoords[1] += 25
+                                babyCoords[2] = 5
+                        if event.key == pygame.K_RETURN:
+                            levelIndex = levelSelect()
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        mousePressed = True
+                        if grabbingPlanet == True:
+                                grabbingPlanet = False
+                        else:
+                            for planetIndex in range(len(planets)):
+                                if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
+                                        planets[planetIndex][2] - lastCursorLoc[0]) + (
+                                                      planets[planetIndex][3] - lastCursorLoc[1]) * (
+                                                      planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][
+                                    1]:
+                                    grabbedPlanet = planetIndex
+                                    if planets[planetIndex][0] != "Earth.png":
+                                        grabbingPlanet = True
 
-            move = player[1] + player[3]*speed*gap
-            if move < 400 and move > 0:
-                player[1] = move
+                    if event.type == pygame.MOUSEBUTTONUP:
+                        mousePressed = False
 
-        drawBackground()
-        drawPlanetBarRect()
-        drawPlayer(player[0], player[1])
-        if grabbingPlanet:
-            planets[grabbedPlanet][2] = planets[grabbedPlanet][2] + (pygame.mouse.get_pos()[0] - lastCursorLoc[0])
-            planets[grabbedPlanet][3] = planets[grabbedPlanet][3] + (pygame.mouse.get_pos()[1] - lastCursorLoc[1])
-        for planet in planets:
-            drawPlanet(planet)
-            if detectCollision(babyCoords, planet):
-                collided = True
+                move = player[1] + player[3] * speed * gap
+                if move < 400 and move > 0:
+                    player[1] = move
 
-        if not collided:
-            if fired:
-                babyCoords = moveBaby(babyCoords, planets, gap, speed)
-                print(babyCoords)
-                if babyCoords[0] >=1200:
-                    completed = True
+            drawBackground()
+            drawPlanetBarRect()
+            drawPlayer(player[0], player[1])
+            if grabbingPlanet:
+                planets[grabbedPlanet][2] = planets[grabbedPlanet][2] + (pygame.mouse.get_pos()[0] - lastCursorLoc[0])
+                planets[grabbedPlanet][3] = planets[grabbedPlanet][3] + (pygame.mouse.get_pos()[1] - lastCursorLoc[1])
+            for planet in planets:
+                drawPlanet(planet)
+                if detectCollision(babyCoords, planet):
+                    if planet[0] == "Earth.png":
+                        completed = True
+                        quick = False
+                    if not collided:
+                        collided = True
+                        initial = time.time()
+
+            for asteroid in asteroids:
+                if detectAsteroidCollision(babyCoords, asteroid):
                     quick = False
-        else:
-            time.sleep(2)
-            running = False
-        drawBaby(babyCoords[0], babyCoords[1])
-        lastCursorLoc = pygame.mouse.get_pos()
-        pygame.display.update()
-        if completed:
-            if not quick:
-                time.sleep(2)
-            running = False
+                    if not collided:
+                        collided = True
+                        initial = time.time()
+
+            if not collided:
+                if fired:
+                    move = moveBaby(babyCoords, planets, gap, speed)
+                    if (move[1] < 430 and move[1] > 0):
+                        babyCoords = move
+                    else:
+                        babyCoords = move
+                        if not collided:
+                            collided = True
+                            initial = time.time()
+
+                    if babyCoords[0] >= 1200:
+                        if not collided:
+                            collided = True
+                            initial = time.time()
+                        quick = False
+                    drawBaby(babyCoords[0], babyCoords[1])
+            else:
+                current = time.time()
+                if current - initial < 0.5:
+                    if completed:
+                        drawBaby(babyCoords[0], babyCoords[1])
+                    else:
+                        drawExplosion(babyCoords[0], babyCoords[1], 1)
+                elif current - initial < 1:
+                    if completed:
+                        drawBaby(babyCoords[0], babyCoords[1])
+                    else:
+                        drawExplosion(babyCoords[0], babyCoords[1], 2)
+
+                elif current - initial < 1.5:
+                    if completed:
+                        drawBaby(babyCoords[0], babyCoords[1])
+                    else:
+                        drawExplosion(babyCoords[0], babyCoords[1], 3)
+
+                else:
+                    running = False
+
+            lastCursorLoc = pygame.mouse.get_pos()
+            for asteroid in asteroids:
+                drawAsteroid(asteroid)
+
+            if not explained:
+                drawExplainScreen()
+                drawExplanation1()
+
+            pygame.display.update()
+            if completed:
+                if not quick:
+                    time.sleep(1)
+                #running = False
+                newIndex = drawEndScreen()
+                if (newIndex==-1):
+                    levelIndex = levelIndex + 1
+                else:
+                    levelIndex = newIndex
+                print ("gamer")
+
+    # LEVEL 2
+    if (levelIndex == 2):
+        def start2(earthX, earthY, first):
+            global planets
+            global player
+            global prevTime
+            global currentTime
+            global speed
+            global fired
+            global babyCoords
+            global mousePressed
+            global grabbedPlanet
+            global grabbingPlanet
+            global lastCursorLoc
+            global collided
+            global asteroids
+            asteroids = []
+            asteroids.append([580, 100, 40, 250])
+            secondLevel()
+            player = [20, (screenY - 150) / 2 - 25, 0, 0]
+            if first:
+                planets = []
+                addPlanet("Planet1.png", 60)
+                addPlanet("Earth.png", 100)
+                planets = importPlanets(planets)
+                planets[len(planets) - 1][2] = earthX
+                planets[len(planets) - 1][3] = earthY
+            prevTime = 0
+            currentTime = time.time()
+            speed = 100
+            babyCoords = [-200, -200, 0, 0]
+            fired = False
+            mousePressed = False
+            grabbedPlanet = 0
+            grabbingPlanet = False
+            lastCursorLoc = pygame.mouse.get_pos()
+            collided = False
+            global starting
+            starting = False
+
+        finished = False
+        first = True
+        completed = False
+        while not completed and not finished and levelIndex == 2:
+            explained = False
+            running = True
+            starting = True
+            while running and levelIndex == 2:
+                if starting:
+                    start2(1200, 225, first)
+                    if first:
+                        first = False
+
+                if not collided:
+                    prevTime = currentTime
+                    currentTime = time.time()
+                    gap = currentTime - prevTime
+
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            running = False
+                            completed = True
+                            finished = True
+                            pygame.quit()
+                            quick = True
+
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_ESCAPE:
+                                running = False
+                                completed = True
+                                quick = True
+                                finished = True
+                                pygame.quit()
+
+                            if event.key == pygame.K_s:
+                                player[3] = 5
+                            if event.key == pygame.K_w:
+                                player[3] = -5
+
+                        if event.type == pygame.KEYUP:
+                            if event.key == pygame.K_w or event.key == pygame.K_s:
+                                player[3] = 0
+                            if event.key == pygame.K_SPACE:
+                                if not explained:
+                                    explained = True
+                                elif not fired:
+                                    fired = True
+                                    babyCoords = []
+                                    for coord in player:
+                                        babyCoords.append(coord)
+                                    babyCoords[0] += 75
+                                    babyCoords[1] += 25
+                                    babyCoords[2] = 5
+                            if event.key == pygame.K_RETURN:
+                                levelIndex = levelSelect()
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            mousePressed = True
+                            if grabbingPlanet == True:
+                                    grabbingPlanet = False
+                            else:
+                                for planetIndex in range(len(planets)):
+                                    if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
+                                            planets[planetIndex][2] - lastCursorLoc[0]) + (
+                                                          planets[planetIndex][3] - lastCursorLoc[1]) * (
+                                                          planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][
+                                        1]:
+                                        grabbedPlanet = planetIndex
+                                        if planets[planetIndex][0] != "Earth.png":
+                                            grabbingPlanet = True
+
+                        if event.type == pygame.MOUSEBUTTONUP:
+                            mousePressed = False
+
+                    move = player[1] + player[3] * speed * gap
+                    if move < 400 and move > 0:
+                        player[1] = move
+
+                drawBackground()
+                drawPlanetBarRect()
+                drawPlayer(player[0], player[1])
+                if grabbingPlanet:
+                    planets[grabbedPlanet][2] = planets[grabbedPlanet][2] + (pygame.mouse.get_pos()[0] - lastCursorLoc[0])
+                    planets[grabbedPlanet][3] = planets[grabbedPlanet][3] + (pygame.mouse.get_pos()[1] - lastCursorLoc[1])
+                for planet in planets:
+                    drawPlanet(planet)
+                    if detectCollision(babyCoords, planet):
+                        if planet[0] == "Earth.png":
+                            completed = True
+                            quick = False
+                        if not collided:
+                            collided = True
+                            initial = time.time()
+
+                for asteroid in asteroids:
+                    if detectAsteroidCollision(babyCoords, asteroid):
+                        quick = False
+                        if not collided:
+                            collided = True
+                            initial = time.time()
+
+                if not collided:
+                    if fired:
+                        move = moveBaby(babyCoords, planets, gap, speed)
+                        if (move[1] < 430 and move[1] > 0):
+                            babyCoords = move
+                        else:
+                            babyCoords = move
+                            if not collided:
+                                collided = True
+                                initial = time.time()
+                        if babyCoords[0] >= 1200:
+                            if not collided:
+                                collided = True
+                                initial = time.time()
+                            quick = False
+                    drawBaby(babyCoords[0], babyCoords[1])
+                else:
+                    current = time.time()
+                    if current - initial < 0.5:
+                        if completed:
+                            drawBaby(babyCoords[0], babyCoords[1])
+                        else:
+                            drawExplosion(babyCoords[0], babyCoords[1], 1)
+                    elif current - initial < 1:
+                        if completed:
+                            drawBaby(babyCoords[0], babyCoords[1])
+                        else:
+                            drawExplosion(babyCoords[0], babyCoords[1], 2)
+
+                    elif current - initial < 1.5:
+                        if completed:
+                            drawBaby(babyCoords[0], babyCoords[1])
+                        else:
+                            drawExplosion(babyCoords[0], babyCoords[1], 3)
+
+                    else:
+                        running = False
+                lastCursorLoc = pygame.mouse.get_pos()
+                for asteroid in asteroids:
+                    drawAsteroid(asteroid)
+
+                if not explained:
+                    drawExplainScreen()
+                    drawExplanation2()
+
+                pygame.display.update()
+                if completed:
+                    if not quick:
+                        time.sleep(1)
+                    newIndex = drawEndScreen()
+                    if (newIndex == -1):
+                        levelIndex = levelIndex + 1
+                    else:
+                        levelIndex = newIndex
+                    print("gamer")
+
+
+
+
+    # LEVEL 3
+    if levelIndex == 3:
+        def start3(earthX, earthY, first):
+            global planets
+            global player
+            global prevTime
+            global currentTime
+            global speed
+            global fired
+            global babyCoords
+            global mousePressed
+            global grabbedPlanet
+            global grabbingPlanet
+            global lastCursorLoc
+            global collided
+            global asteroids
+            asteroids = []
+            asteroids.append([680, 200, 40, 250])
+            asteroids.append([200, 0, 40, 250])
+            thirdLevel()
+            player = [20, (screenY - 150) / 2 - 25, 0, 0]
+            if first:
+                planets = []
+                addPlanet("Planet1.png", 60)
+                addPlanet("Planet2.png", 40)
+                addPlanet("Earth.png", 100)
+                print(planets)
+                planets = importPlanets(planets)
+                planets[len(planets) - 1][2] = earthX
+            planets[len(planets) - 1][3] = earthY
+            prevTime = 0
+            currentTime = time.time()
+            speed = 100
+            babyCoords = [-200, -200, 0, 0]
+            fired = False
+            mousePressed = False
+            grabbedPlanet = 0
+            grabbingPlanet = False
+            lastCursorLoc = pygame.mouse.get_pos()
+            collided = False
+            global starting
+            starting = False
+
+        completed = False
+        first = True
+        while not completed and not finished and levelIndex == 3:
+            running = True
+            starting = True
+            explained = False
+            while running and levelIndex == 3:
+                if starting:
+                    start3(1200, 140, first)
+                    if first:
+                        first = False
+
+                if not collided:
+                    prevTime = currentTime
+                    currentTime = time.time()
+                    gap = currentTime - prevTime
+
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            running = False
+                            completed = True
+                            quick = True
+                            finished = True
+                            pygame.quit()
+
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_ESCAPE:
+                                running = False
+                                completed = True
+                                quick = True
+                                finished = True
+                                pygame.quit()
+
+                            if event.key == pygame.K_s:
+                                player[3] = 5
+                            if event.key == pygame.K_w:
+                                player[3] = -5
+
+                        if event.type == pygame.KEYUP:
+                            if event.key == pygame.K_w or event.key == pygame.K_s:
+                                player[3] = 0
+                            if event.key == pygame.K_SPACE:
+                                if explained and not fired:
+                                    fired = True
+                                    babyCoords = []
+                                    for coord in player:
+                                        babyCoords.append(coord)
+                                    babyCoords[0] += 75
+                                    babyCoords[1] += 25
+                                    babyCoords[2] = 5
+                                if not explained:
+                                    explained = True
+                            if event.key == pygame.K_RETURN:
+                                levelIndex = levelSelect()
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            mousePressed = True
+                            if grabbingPlanet == True:
+                                overlap = False
+                                for planetIndex in (0, len(planets) - 1, 1):
+                                    if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
+                                            planets[planetIndex][2] - lastCursorLoc[0]) + (
+                                                          planets[planetIndex][3] - lastCursorLoc[1]) * (
+                                                          planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][
+                                        1] and planetIndex != grabbedPlanet:
+                                        overlap = True
+
+                                grabbingPlanet = False
+                            else:
+                                for planetIndex in range(len(planets)):
+                                    if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
+                                            planets[planetIndex][2] - lastCursorLoc[0]) + (
+                                                          planets[planetIndex][3] - lastCursorLoc[1]) * (
+                                                          planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][
+                                        1]:
+                                        grabbedPlanet = planetIndex
+                                        if planets[planetIndex][0] != "Earth.png":
+                                            grabbingPlanet = True
+
+                        if event.type == pygame.MOUSEBUTTONUP:
+                            mousePressed = False
+
+                    move = player[1] + player[3] * speed * gap
+                    if move < 400 and move > 0:
+                        player[1] = move
+
+                drawBackground()
+                drawPlanetBarRect()
+                drawPlayer(player[0], player[1])
+                if grabbingPlanet:
+                    planets[grabbedPlanet][2] = planets[grabbedPlanet][2] + (pygame.mouse.get_pos()[0] - lastCursorLoc[0])
+                    planets[grabbedPlanet][3] = planets[grabbedPlanet][3] + (pygame.mouse.get_pos()[1] - lastCursorLoc[1])
+                for planet in planets:
+                    drawPlanet(planet)
+                    if detectCollision(babyCoords, planet):
+                        if planet[0] == "Earth.png":
+                            completed = True
+                            quick = False
+                        if not collided:
+                            collided = True
+                            initial = time.time()
+
+                for asteroid in asteroids:
+                    if detectAsteroidCollision(babyCoords, asteroid):
+                        quick = False
+                        if not collided:
+                            collided = True
+                            initial = time.time()
+
+                if not collided:
+                    if fired:
+                        move = moveBaby(babyCoords, planets, gap, speed)
+                        if (move[1] < 430 and move[1] > 0):
+                            babyCoords = move
+                        else:
+                            babyCoords = move
+                            if not collided:
+                                collided = True
+                                initial = time.time()
+                        if babyCoords[0] >= 1200:
+                            if not collided:
+                                collided = True
+                                initial = time.time()
+                            quick = False
+                    drawBaby(babyCoords[0], babyCoords[1])
+                else:
+                    current = time.time()
+                    if current - initial < 0.5:
+                        if completed:
+                            drawBaby(babyCoords[0], babyCoords[1])
+                        else:
+                            drawExplosion(babyCoords[0], babyCoords[1], 1)
+                    elif current - initial < 1:
+                        if completed:
+                            drawBaby(babyCoords[0], babyCoords[1])
+                        else:
+                            drawExplosion(babyCoords[0], babyCoords[1], 2)
+
+                    elif current - initial < 1.5:
+                        if completed:
+                            drawBaby(babyCoords[0], babyCoords[1])
+                        else:
+                            drawExplosion(babyCoords[0], babyCoords[1], 3)
+
+                    else:
+                        running = False
+                lastCursorLoc = pygame.mouse.get_pos()
+                for asteroid in asteroids:
+                    drawAsteroid(asteroid)
+                if not explained:
+                    drawExplainScreen()
+                    drawExplanation3()
+
+                pygame.display.update()
+                if completed:
+                    if not quick:
+                        time.sleep(1)
+                    newIndex = drawEndScreen()
+                    if (newIndex == -1):
+                        levelIndex = levelIndex + 1
+                    else:
+                        levelIndex = newIndex
+                    print("gamer")
+
+    #LEVEL 4
+    if levelIndex == 4:
+        def start4(earthX, earthY, first):
+            global planets
+            global player
+            global prevTime
+            global currentTime
+            global speed
+            global fired
+            global babyCoords
+            global mousePressed
+            global grabbedPlanet
+            global grabbingPlanet
+            global lastCursorLoc
+            global collided
+            global asteroids
+            asteroids = []
+            asteroids.append([300, 0, 30, 180])
+            asteroids.append([300, 450-180, 30, 180])
+            asteroids.append([580, 205, 40, 40])
+            fourthLevel()
+            player = [20, (screenY - 150) / 2 - 25, 0, 0]
+            if first:
+                planets = []
+                addPlanet("Planet1.png", 60)
+                addPlanet("Planet3.png", 50)
+                addPlanet("Earth.png", 100)
+                print(planets)
+                planets = importPlanets(planets)
+                planets[len(planets) - 1][2] = earthX
+            planets[len(planets) - 1][3] = earthY
+            prevTime = 0
+            currentTime = time.time()
+            speed = 100
+            babyCoords = [-200, -200, 0, 0]
+            fired = False
+            mousePressed = False
+            grabbedPlanet = 0
+            grabbingPlanet = False
+            lastCursorLoc = pygame.mouse.get_pos()
+            collided = False
+            global starting
+            starting = False
+
+        completed = False
+        first = True
+        while not completed and not finished and levelIndex == 4:
+            running = True
+            starting = True
+            explained = False
+            while running and levelIndex == 4:
+                if starting:
+                    start4(1200, 225, first)
+                    if first:
+                        first = False
+
+                if not collided:
+                    prevTime = currentTime
+                    currentTime = time.time()
+                    gap = currentTime - prevTime
+
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            running = False
+                            completed = True
+                            quick = True
+                            finished = True
+                            pygame.quit()
+
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_ESCAPE:
+                                running = False
+                                completed = True
+                                quick = True
+                                finished = True
+                                pygame.quit()
+
+                            if event.key == pygame.K_s:
+                                player[3] = 5
+                            if event.key == pygame.K_w:
+                                player[3] = -5
+
+                        if event.type == pygame.KEYUP:
+                            if event.key == pygame.K_w or event.key == pygame.K_s:
+                                player[3] = 0
+                            if event.key == pygame.K_SPACE:
+                                if explained and not fired:
+                                    fired = True
+                                    babyCoords = []
+                                    for coord in player:
+                                        babyCoords.append(coord)
+                                    babyCoords[0] += 75
+                                    babyCoords[1] += 25
+                                    babyCoords[2] = 5
+                                if not explained:
+                                    explained = True
+                            if event.key == pygame.K_RETURN:
+                                levelIndex = levelSelect()
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            mousePressed = True
+                            if grabbingPlanet == True:
+                                overlap = False
+                                for planetIndex in (0, len(planets) - 1, 1):
+                                    if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
+                                            planets[planetIndex][2] - lastCursorLoc[0]) + (
+                                                          planets[planetIndex][3] - lastCursorLoc[1]) * (
+                                                          planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][
+                                        1] and planetIndex != grabbedPlanet:
+                                        overlap = True
+
+                                grabbingPlanet = False
+                            else:
+                                for planetIndex in range(len(planets)):
+                                    if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
+                                            planets[planetIndex][2] - lastCursorLoc[0]) + (
+                                                          planets[planetIndex][3] - lastCursorLoc[1]) * (
+                                                          planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][
+                                        1]:
+                                        grabbedPlanet = planetIndex
+                                        if planets[planetIndex][0] != "Earth.png":
+                                            grabbingPlanet = True
+
+                        if event.type == pygame.MOUSEBUTTONUP:
+                            mousePressed = False
+
+                    move = player[1] + player[3] * speed * gap
+                    if move < 400 and move > 0:
+                        player[1] = move
+
+                drawBackground()
+                drawPlanetBarRect()
+                drawPlayer(player[0], player[1])
+                if grabbingPlanet:
+                    planets[grabbedPlanet][2] = planets[grabbedPlanet][2] + (pygame.mouse.get_pos()[0] - lastCursorLoc[0])
+                    planets[grabbedPlanet][3] = planets[grabbedPlanet][3] + (pygame.mouse.get_pos()[1] - lastCursorLoc[1])
+                for planet in planets:
+                    drawPlanet(planet)
+                    if detectCollision(babyCoords, planet):
+                        if planet[0] == "Earth.png":
+                            completed = True
+                            quick = False
+                        if not collided:
+                            collided = True
+                            initial = time.time()
+
+                for asteroid in asteroids:
+                    if detectAsteroidCollision(babyCoords, asteroid):
+                        quick = False
+                        if not collided:
+                            collided = True
+                            initial = time.time()
+
+                if not collided:
+                    if fired:
+                        move = moveBaby(babyCoords, planets, gap, speed)
+                        if (move[1] < 430 and move[1] > 0):
+                            babyCoords = move
+                        else:
+                            babyCoords = move
+                            if not collided:
+                                collided = True
+                                initial = time.time()
+                        print(babyCoords)
+                        if babyCoords[0] >= 1200:
+                            if not collided:
+                                collided = True
+                                initial = time.time()
+                            quick = False
+                    drawBaby(babyCoords[0], babyCoords[1])
+                else:
+                    current = time.time()
+                    if current - initial < 0.5:
+                        if completed:
+                            drawBaby(babyCoords[0], babyCoords[1])
+                        else:
+                            drawExplosion(babyCoords[0], babyCoords[1], 1)
+                    elif current - initial < 1:
+                        if completed:
+                            drawBaby(babyCoords[0], babyCoords[1])
+                        else:
+                            drawExplosion(babyCoords[0], babyCoords[1], 2)
+
+                    elif current - initial < 1.5:
+                        if completed:
+                            drawBaby(babyCoords[0], babyCoords[1])
+                        else:
+                            drawExplosion(babyCoords[0], babyCoords[1], 3)
+
+                    else:
+                        running = False
+
+                lastCursorLoc = pygame.mouse.get_pos()
+                for asteroid in asteroids:
+                    drawAsteroid(asteroid)
+                if not explained:
+                    drawExplainScreen()
+                    drawExplanation4()
+
+                pygame.display.update()
+                if completed:
+                    if not quick:
+                        time.sleep(1)
+                    newIndex = drawEndScreen()
+                    if (newIndex == -1):
+                        levelIndex = levelIndex + 1
+                    else:
+                        levelIndex = newIndex
+                    print("gamer")
