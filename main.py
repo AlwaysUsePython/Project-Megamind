@@ -129,14 +129,15 @@ def mainMenu():
 
 
 def moveBaby(player, planets, gap, speed):
-    player[0] += player[2] * gap * speed
     # player[3] = 0
     for planet in planets:
         if planet[3] < 450:
             if getDistance(player, planet) < 2500:
-                player[3] -= (player[1] - planet[3]) * planet[1]*(gap*speed) / ((getDistance(player, planet) ** 2) * 8)
-                player[2] -= (player[0] - planet[2]) * planet[1]*(gap*speed) / ((getDistance(player, planet) ** 2) * 8)
+                player[3] -= (player[1] - planet[3]) * planet[1] * (gap*speed) / ((getDistance(player, planet) ** 2)*8)
+                player[2] -= (player[0] - planet[2]) * planet[1] * (gap*speed) / ((getDistance(player, planet) ** 2)*8)
+
     player[1] += player[3] * gap * speed
+    player[0] += player[2] * gap * speed
     return player
 
 def drawExplanation0():
