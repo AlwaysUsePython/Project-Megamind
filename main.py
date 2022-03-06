@@ -206,7 +206,7 @@ while not completed:
                     if event.key == pygame.K_w or event.key == pygame.K_s:
                         player[3] = 0
                     if event.key == pygame.K_SPACE:
-                        if not fired:
+                        if (not fired) and (not grabbingPlanet):
                             fired = True
                             babyCoords = []
                             for coord in player:
@@ -219,15 +219,15 @@ while not completed:
                     if grabbingPlanet == True:
                         overlap = False
                         for planetIndex in (0, len(planets) - 1, 1):
-                            if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
-                                    planets[planetIndex][2] - lastCursorLoc[0]) + (
-                                                  planets[planetIndex][3] - lastCursorLoc[1]) * (
-                                                  planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][
-                                1] and planetIndex != grabbedPlanet:
+                            if (math.sqrt((planets[planetIndex][2] - planets[grabbedPlanet][2]) * (
+                                    planets[planetIndex][2] - planets[grabbedPlanet][2]) + (
+                                                  planets[planetIndex][3] - planets[grabbedPlanet][3]) * (
+                                                  planets[planetIndex][3] - planets[grabbedPlanet][3]))) < planets[planetIndex][
+                                1] + planets[grabbedPlanet][1] and planetIndex != grabbedPlanet:
                                 overlap = True
                         if not overlap:
                             grabbingPlanet = False
-                    else:
+                    elif not fired:
                         for planetIndex in range(len(planets)):
                             if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
                                     planets[planetIndex][2] - lastCursorLoc[0]) + (
