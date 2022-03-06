@@ -42,8 +42,21 @@ def addWormhole(imageName,width,height,x,y,rotation,x2,y2,rotation2): #x and y a
     wormholePairs.append(newPair)
 
 def teleport(wormholePair,startIndex):
-    player[1] = wormholePair[(startIndex+1)%2] + player[1] - wormholePair[startIndex][5]
-    player[0] = wormholePair[(startIndex+1)%2] + player[0] - wormholePair[startIndex][4]
+    startWormhole = wormholePair[startIndex]
+    otherWormhole = wormholePair[(startIndex+1)%2]
+    angle = math.radians(otherWormhole[5])
+    babyCoords[0] = otherWormhole[3] + (babyCoords[0] - startWormhole[3])*math.sin(angle)/math.sin(math.radians(startWormhole[5]))
+    babyCoords[1] = otherWormhole[4] + (babyCoords[1] - startWormhole[4])*math.cos(angle)/math.cos(math.radians(startWormhole[5]))
+    oldDX = babyCoords[2]
+    oldDY = babyCoords[3]
+    A = math.radians(180) - math.atan(oldDY/oldDX) - math.radians(startWormhole[5])
+    currentSpeed = math.sqrt(oldDX**2 + oldDY**2)
+    #babyCoords[2] = -currentSpeed * math.sin(A+otherWormhole[5])
+    #babyCoords[3] = -currentSpeed * math.cos(A + otherWormhole[5])
+    #babyCoords[2] = oldDX*math.cos(math.radians(otherWormhole[5]))/math.cos(math.radians(startWormhole[5])) + oldDY*math.sin(math.radians(otherWormhole[5]))/math.sin(math.radians(startWormhole[5]))
+    #babyCoords[3] = oldDY*math.sin(math.radians(otherWormhole[5]))/math.sin(math.radians(startWormhole[5])) + oldDX*math.cos(math.radians(otherWormhole[5]))/math.cos(math.radians(startWormhole[5]))
+    babyCoords[2] = oldDX * math.cos(angle)-oldDY * math.sin(angle)
+    babyCoords[3] = oldDX * math.sin(angle)-oldDY * math.cos(angle)
 
 def drawWormholes():
     for pair in wormholePairs:
@@ -183,13 +196,13 @@ def start1():
     addPlanet("Planet2.png",40)
     addPlanet("Planet3.png",50)
     addPlanet("Planet4.png",60)
-    addWormhole("wormhole.png",37,63,500,200,0,200,200,0)
+    addWormhole("wormhole.png",10,500,500,100,10,200,000,45 )
     print(planets)
     planets = importPlanets(planets)
     print(planets)
     prevTime = 0
     currentTime = time.time()
-    speed = 100
+    speed = 40
     babyCoords = [-200, -200, 0, 0]
     fired = False
     mousePressed = False
@@ -203,9 +216,13 @@ def start1():
 mainMenu()
 completed = False
 while not completed:
+
+    hasTeleported = False
     running = True
     starting = True
     while running:
+
+        teleportCount = 0
         if starting:
             start1()
 
@@ -292,21 +309,68 @@ while not completed:
             running = False
         drawWormholes()
         drawBaby(babyCoords[0], babyCoords[1])
-        if fired:
+        if (fired) and (not hasTeleported):
             finalPairIndex = 0
             finalWormholeIndex = 0
-            for pairIndex in (0, len(wormholePairs) - 1, 1):
-                for wormholeIndex in (0, 1, 1):
-                    across = player[0] - wormholePairs[pairIndex][wormholeIndex][3]
+            for pairIndex in range(len(wormholePairs)):
+                for wormholeIndex in range(len(wormholePairs[pairIndex])):
+                    babyX = babyCoords[0]
+                    babyY = babyCoords[1]
+                    topLeftX = wormholePairs[pairIndex][wormholeIndex][3]
+                    topLeftY = wormholePairs[pairIndex][wormholeIndex][4]
+                    angle = math.radians(wormholePairs[pairIndex][wormholeIndex][5])
+                    print(wormholeIndex)
+                    across = babyCoords[0] - topLeftX
+                    print(" across ")
                     print(across)
-                    down = player[1] - wormholePairs[pairIndex][wormholeIndex][4]
+                    down = babyCoords[1] - topLeftY
+                    print(" down ")
                     print(down)
-                    height = math.cos(wormholePair[pairIndex][wormholeIndex][5]) * wormholePair[pairIndex][wormholeIndex][2]
+                    height = math.cos(angle) * wormholePairs[pairIndex][wormholeIndex][2]
+                    print(" height ")
                     print(height)
-                    width = math.sin(wormholePair[pairIndex][wormholeIndex][5]) * wormholePair[pairIndex][wormholeIndex][2]
+
+                    width = math.sin(angle) * wormholePairs[pairIndex][wormholeIndex][2]
+                    print(" width ")
                     print(width)
-                    if (across/width) / (down/height) > 0.99999 and (across/width) / (down/height) < 1.000001:
-                        running = False
+                    print ("cos")
+                    print (math.cos(angle))
+                    print ("sin")
+                    print (math.sin(angle))
+                    if width == 0:
+                        width = 1
+                    if across == 0:
+                        across = 1
+                    if height == 0:
+                        height = 1
+                    if down == 0:
+                        down = 1
+                    print("check")
+                    print((across/width) / (down/height))
+                    print(angle)
+                    print(babyCoords[1])
+                    print(teleportCount)
+                    print(angle + height)
+                    print(player)
+
+                    #ellipseX = wormholePairs[pairIndex][wormholeIndex][3] + width/2
+                    #ellipseY = wormholePairs[pairIndex][wormholeIndex][4] + height/2
+                    #if ((((babyX-ellipseX/2)*math.cos(angle)+(babyY-ellipseY/2)*math.sin(angle))**2)/(width**2)+(((babyX-ellipseX/2)*math.sin(angle)-(babyY-ellipseY/2)*math.cos(angle))**2)/(height**2)) < 1:
+                    #slope = math.cos(angle)/math.sin(angle)
+                    #if (slope*(babyX-topLeftX)+topLeftY + 20*math.sin(angle) > babyY) \
+                        #and (slope*(babyX-topLeftX)+topLeftY - 20*math.sin(angle) < babyY) \
+                        #and (topLeftY<babyY+15) \
+                        #and (topLeftY + height) > babyCoords[1]+15:
+                    if (((across / width) / (down / height) > 0.8 and (across / width) / (down / height) < 1.2) \
+                        and (topLeftY < babyY + 15) \
+                        and (topLeftY + height) > babyCoords[1] + 15) \
+                        or ((angle == 0) \
+                        and (topLeftX < babyX) \
+                        and (topLeftX + width > babyX)):
+                        print("done")
+                        teleport(wormholePairs[pairIndex],wormholeIndex)
+                        hasTeleported = True
+                        teleportCount = teleportCount + 1
 
         lastCursorLoc = pygame.mouse.get_pos()
         pygame.display.update()
