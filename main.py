@@ -134,8 +134,8 @@ def moveBaby(player, planets, gap, speed):
     for planet in planets:
         if planet[3] < 450:
             if getDistance(player, planet) < 2500:
-                player[3] -= (player[1] - planet[3]) * planet[1]*(gap*speed)**2 / ((getDistance(player, planet) ** 2) * 8)
-                player[2] -= (player[0] - planet[2]) * planet[1]*(gap*speed)**2 / ((getDistance(player, planet) ** 2) * 8)
+                player[3] -= (player[1] - planet[3]) * planet[1]*(gap*speed) / ((getDistance(player, planet) ** 2) * 8)
+                player[2] -= (player[0] - planet[2]) * planet[1]*(gap*speed) / ((getDistance(player, planet) ** 2) * 8)
     player[1] += player[3] * gap * speed
     return player
 
@@ -204,6 +204,7 @@ def drawExplanation2():
 
 
 def firstLevel():
+    global finished
     font = pygame.font.Font("freesansbold.ttf", 32)
     text = font.render("Level 1", True, (255, 255, 255))
     text2 = font.render("Press Space to Begin", True, (200, 200, 200))
@@ -216,10 +217,12 @@ def firstLevel():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 inMenu = False
+                finished = True
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_ESCAPE:
                     inMenu = False
+                    finished = True
                 if event.key == pygame.K_SPACE:
                     inMenu = False
         drawBackground()
@@ -231,6 +234,7 @@ def firstLevel():
 
 
 def secondLevel():
+    global finished
     font = pygame.font.Font("freesansbold.ttf", 32)
     text = font.render("Level 2", True, (255, 255, 255))
     text2 = font.render("Press Space to Begin", True, (200, 200, 200))
@@ -243,10 +247,12 @@ def secondLevel():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 inMenu = False
+                finished = True
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_ESCAPE:
                     inMenu = False
+                    finished = True
                 if event.key == pygame.K_SPACE:
                     inMenu = False
         drawBackground()
@@ -258,6 +264,7 @@ def secondLevel():
 
 
 def thirdLevel():
+    global finished
     font = pygame.font.Font("freesansbold.ttf", 32)
     text = font.render("Level 3", True, (255, 255, 255))
     text2 = font.render("Press Space to Begin", True, (200, 200, 200))
@@ -270,10 +277,12 @@ def thirdLevel():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 inMenu = False
+                finished = True
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_ESCAPE:
                     inMenu = False
+                    finished = True
                 if event.key == pygame.K_SPACE:
                     inMenu = False
         drawBackground()
