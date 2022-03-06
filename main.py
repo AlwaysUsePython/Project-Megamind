@@ -112,6 +112,50 @@ def addPlanet(imageName, size):
     planets.append([imageName, size])
 
 
+def startScreen():
+    wait=True
+    while wait:
+        drawBackground()
+        box = pygame.image.load("box.png")
+        width = 1000
+        height = 500
+        box = pygame.transform.scale(box, (width, height))
+        screen.blit(box, ((1200 - width) / 2, (600 - height) / 2))
+        font = pygame.font.Font("freesansbold.ttf", 36)
+        text = font.render("Your home planet has been destroyed!",True, (255,255,255))
+        textRect = text.get_rect()
+        textRect.center = (600,100)
+        screen.blit(text,textRect)
+        text2 = font.render("One baby is your species' only shot at survival", True, (255,255,255))
+        textRect2 = text2.get_rect()
+        textRect2.center=(600,200)
+        screen.blit(text2,textRect2)
+        text3 = font.render("Get the baby to Earth", True, (255,255,255))
+        textRect3 = text3.get_rect()
+        textRect3.center = (600,300)
+        screen.blit(text3,textRect3)
+        text4 = font.render("Press Space to continue", True, (255,255,255))
+        textRect4 = text4.get_rect()
+        textRect4.center = (600, 500)
+        screen.blit(text4,textRect4)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                wait = False
+                pygame.quit()
+
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_ESCAPE:
+                    wait = False
+                    pygame.quit()
+                if event.key == pygame.K_SPACE:
+                    wait = False
+        pygame.display.update()
+
+
+
+
+
 def importPlanets(planetArray):  # planetArray must be a 2d array of planets
     planetLocations = []
     loc = [1055, 525]  # x position of next planet; gets updated after every planet placement
@@ -1108,6 +1152,7 @@ finished = False
 
 completed = False
 first = True
+startScreen()
 levelIndex = mainMenu()
 print("going to while loop")
 while not finished:
@@ -2622,6 +2667,7 @@ while not finished:
 
     if levelIndex >= 9:
         finished = True
+
 
 running = True
 while running:
