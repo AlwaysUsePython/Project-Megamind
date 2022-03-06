@@ -33,16 +33,28 @@ def drawPlayer(x, y):
 def addPlanet(imageName,size):
     planets.append([imageName,size])
 
-def addWormhole(imageName,width,height,x,y,rotation): #x and y are top left points; rotation should be between 0 and 360
+def addWormhole(imageName,width,height,x,y,rotation,x2,y2,rotation2): #x and y are top left points; rotation should be between 0 and 360
     newWormhole = [imageName,width,height,x,y,rotation]
-    wormholes.append(newWormhole)
+    newWormhole2 = [imageName,width,height,x2,y2,rotation2]
+    newPair = []
+    newPair.append(newWormhole)
+    newPair.append(newWormhole2)
+    wormholePairs.append(newPair)
+
+def teleport(wormholePair,startIndex):
+    player[1] = wormholePair[(startIndex+1)%2] + player[1] - wormholePair[startIndex][5]
+    player[0] = wormholePair[(startIndex+1)%2] + player[0] - wormholePair[startIndex][4]
 
 def drawWormholes():
-    for wormhole in wormholes:
-        wormholeImg = pygame.image.load(wormhole[0])
-        wormholeImg = pygame.transform.scale(wormholeImg,(wormhole[1],wormhole[2]))
-        wormholeImg = pygame.transform.rotate(wormholeImg,wormhole[5])
-        screen.blit(wormholeImg,(wormhole[3],wormhole[4]))
+    for pair in wormholePairs:
+        wormholeImg = pygame.image.load(pair[0][0])
+        wormholeImg = pygame.transform.scale(wormholeImg,(pair[0][1],pair[0][2]))
+        wormholeImg = pygame.transform.rotate(wormholeImg,pair[0][5])
+        screen.blit(wormholeImg,(pair[0][3],pair[0][4]))
+        wormholeImg = pygame.image.load(pair[1][0])
+        wormholeImg = pygame.transform.scale(wormholeImg, (pair[1][1], pair[1][2]))
+        wormholeImg = pygame.transform.rotate(wormholeImg, pair[1][5])
+        screen.blit(wormholeImg, (pair[1][3], pair[1][4]))
 
 def importPlanets(planetArray): #planetArray must be a 2d array of planets
     planetLocations = []
@@ -73,6 +85,9 @@ def drawPlanetBarRect():
 
 def getDistance(baby, planet):
     return math.sqrt((babyCoords[0]-planet[2])**2 + (babyCoords[1] - planet[3])**2)
+
+def getPlanetDistance(planet1,planet2):
+    return math.sqrt((planet1[2]-planet2[2])**2 + (planet1[3]-planet2[3])**2)
 
 def detectCollision(baby, planet):
     distance = getDistance(baby, planet)
@@ -159,16 +174,16 @@ def start1():
     global grabbingPlanet
     global lastCursorLoc
     global collided
-    global wormholes
+    global wormholePairs
     planets = []
-    wormholes = []
+    wormholePairs = []
     firstLevel()
     player = [20, (screenY - 150) / 2 - 25, 0, 0]
     addPlanet("Planet1.png",70)
     addPlanet("Planet2.png",40)
     addPlanet("Planet3.png",50)
     addPlanet("Planet4.png",60)
-    addWormhole("wormhole.png",20,100,500,500,0)
+    addWormhole("wormhole.png",37,63,500,200,0,200,200,0)
     print(planets)
     planets = importPlanets(planets)
     print(planets)
@@ -233,11 +248,8 @@ while not completed:
                     if grabbingPlanet == True:
                         overlap = False
                         for planetIndex in (0, len(planets) - 1, 1):
-                            if (math.sqrt((planets[planetIndex][2] - planets[grabbedPlanet][2]) * (
-                                    planets[planetIndex][2] - planets[grabbedPlanet][2]) + (
-                                                  planets[planetIndex][3] - planets[grabbedPlanet][3]) * (
-                                                  planets[planetIndex][3] - planets[grabbedPlanet][3]))) < planets[planetIndex][
-                                1] + planets[grabbedPlanet][1] and planetIndex != grabbedPlanet:
+                            if ((getPlanetDistance(planets[planetIndex],planets[grabbedPlanet])) < planets[planetIndex][
+                                1] + planets[grabbedPlanet][1]) and planetIndex != grabbedPlanet:
                                 overlap = True
                         if not overlap:
                             grabbingPlanet = False
@@ -280,6 +292,22 @@ while not completed:
             running = False
         drawWormholes()
         drawBaby(babyCoords[0], babyCoords[1])
+        if fired:
+            finalPairIndex = 0
+            finalWormholeIndex = 0
+            for pairIndex in (0, len(wormholePairs) - 1, 1):
+                for wormholeIndex in (0, 1, 1):
+                    across = player[0] - wormholePairs[pairIndex][wormholeIndex][3]
+                    print(across)
+                    down = player[1] - wormholePairs[pairIndex][wormholeIndex][4]
+                    print(down)
+                    height = math.cos(wormholePair[pairIndex][wormholeIndex][5]) * wormholePair[pairIndex][wormholeIndex][2]
+                    print(height)
+                    width = math.sin(wormholePair[pairIndex][wormholeIndex][5]) * wormholePair[pairIndex][wormholeIndex][2]
+                    print(width)
+                    if (across/width) / (down/height) > 0.99999 and (across/width) / (down/height) < 1.000001:
+                        running = False
+
         lastCursorLoc = pygame.mouse.get_pos()
         pygame.display.update()
         if completed:
