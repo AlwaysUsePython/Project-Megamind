@@ -27,9 +27,14 @@ babyImg = pygame.transform.scale(originalBabyImg, (30, 30))
 bigBabyImg = pygame.transform.scale(originalBabyImg, (200, 200))
 
 
+explainScreen = pygame.image.load("Explanation.png")
+explainScreen = pygame.transform.scale(explainScreen, (1000, 500))
+
 def drawBaby(x, y):
     screen.blit(babyImg, (x - 15, y - 15))
 
+def drawExplainScreen():
+    screen.blit(explainScreen, (100, 50))
 
 def drawBigBaby(x, y):
     screen.blit(bigBabyImg, (x - 100, y - 100))
@@ -129,10 +134,49 @@ def moveBaby(player, planets, gap, speed):
     for planet in planets:
         if planet[3] < 450:
             if getDistance(player, planet) < 2500:
-                player[3] -= (player[1] - planet[3]) * planet[1]*gap*speed / ((getDistance(player, planet) ** 2) * 5)
-                player[2] -= (player[0] - planet[2]) * planet[1]*gap*speed / ((getDistance(player, planet) ** 2) * 5)
+                player[3] -= (player[1] - planet[3]) * planet[1]*gap*speed / ((getDistance(player, planet) ** 2) * 8)
+                player[2] -= (player[0] - planet[2]) * planet[1]*gap*speed / ((getDistance(player, planet) ** 2) * 8)
     player[1] += player[3] * gap * speed
     return player
+
+def drawExplanation1():
+    font = pygame.font.Font("freesansbold.ttf", 32)
+    text = font.render("Avoid the asteroids!!", True, (255, 255, 255))
+    text1 = font.render("Planets have gravitational pull", True, (255, 255, 255))
+    text2 = font.render("Use that to your advantage!", True, (255, 255, 255))
+    text3 = font.render("Press Space to Begin", True, (200, 200, 200))
+    textRect = text.get_rect()
+    textRect.center = (600, 100)
+    textRect1 = text1.get_rect()
+    textRect1.center = (600, 250)
+    textRect2 = text2.get_rect()
+    textRect2.center = (600, 350)
+    textRect3 = text3.get_rect()
+    textRect3.center = (600, 500)
+    screen.blit(text, textRect)
+    screen.blit(text1, textRect1)
+    screen.blit(text2, textRect2)
+    screen.blit(text3, textRect3)
+
+
+def drawExplanation2():
+    font = pygame.font.Font("freesansbold.ttf", 32)
+    text = font.render("This one's a bit harder!", True, (255, 255, 255))
+    text1 = font.render("You may need to place a few more planets.", True, (255, 255, 255))
+    text2 = font.render("Larger planets have larger gravitational pulls!", True, (255, 255, 255))
+    text3 = font.render("Press Space to Begin", True, (200, 200, 200))
+    textRect = text.get_rect()
+    textRect.center = (600, 100)
+    textRect1 = text1.get_rect()
+    textRect1.center = (600, 250)
+    textRect2 = text2.get_rect()
+    textRect2.center = (600, 350)
+    textRect3 = text3.get_rect()
+    textRect3.center = (600, 500)
+    screen.blit(text, textRect)
+    screen.blit(text1, textRect1)
+    screen.blit(text2, textRect2)
+    screen.blit(text3, textRect3)
 
 
 def firstLevel():
@@ -221,6 +265,7 @@ finished = False
 mainMenu()
 completed = False
 while not completed and not finished:
+    explained = False
     running = True
     starting = True
     while running:
@@ -255,7 +300,9 @@ while not completed and not finished:
                     if event.key == pygame.K_w or event.key == pygame.K_s:
                         player[3] = 0
                     if event.key == pygame.K_SPACE:
-                        if not fired:
+                        if not explained:
+                            explained = True
+                        elif not fired:
                             fired = True
                             babyCoords = []
                             for coord in player:
@@ -322,6 +369,11 @@ while not completed and not finished:
         lastCursorLoc = pygame.mouse.get_pos()
         for asteroid in asteroids:
             drawAsteroid(asteroid)
+
+        if not explained:
+            drawExplainScreen()
+            drawExplanation1()
+
         pygame.display.update()
         if completed:
             if not quick:
@@ -404,6 +456,7 @@ completed = False
 while not completed and not finished:
     running = True
     starting = True
+    explained = False
     while running:
         if starting:
             start2(1000, 390)
@@ -436,7 +489,7 @@ while not completed and not finished:
                     if event.key == pygame.K_w or event.key == pygame.K_s:
                         player[3] = 0
                     if event.key == pygame.K_SPACE:
-                        if not fired:
+                        if explained and not fired:
                             fired = True
                             babyCoords = []
                             for coord in player:
@@ -444,6 +497,8 @@ while not completed and not finished:
                             babyCoords[0] += 75
                             babyCoords[1] += 25
                             babyCoords[2] = 5
+                        if not explained:
+                            explained = True
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mousePressed = True
                     if grabbingPlanet == True:
@@ -512,6 +567,10 @@ while not completed and not finished:
         lastCursorLoc = pygame.mouse.get_pos()
         for asteroid in asteroids:
             drawAsteroid(asteroid)
+        if not explained:
+            drawExplainScreen()
+            drawExplanation2()
+
         pygame.display.update()
         if completed:
             if not quick:
