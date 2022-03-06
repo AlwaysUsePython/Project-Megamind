@@ -49,11 +49,15 @@ def addPlanet(imageName, size):
 
 def importPlanets(planetArray):  # planetArray must be a 2d array of planets
     planetLocations = []
-    loc = [screenX - 20, screenY - 75]  # x position of next planet; gets updated after every planet placement
+    loc = [1065, 525]  # x position of next planet; gets updated after every planet placement
     for planet in planetArray:
         planetLocations.append([planet[0], planet[1], loc[0] - planet[1], loc[1]])
-        loc[0] = loc[0] - 50 - 2 * planet[1]
-        print(loc)
+        if loc == [1065, 525]:
+            loc[0] = loc[0] - 280
+        elif loc == [1065-280, 525]:
+            loc[0] = loc[0] - 280
+        elif loc == [1065 - 280 - 280, 525]:
+            loc[0] -= 240
     return planetLocations
 
 
@@ -125,8 +129,8 @@ def moveBaby(player, planets, gap, speed):
     for planet in planets:
         if planet[3] < 450:
             if getDistance(player, planet) < 2500:
-                player[3] -= (player[1] - planet[3]) * planet[1] / ((getDistance(player, planet) ** 2) * 5)
-                player[2] -= (player[0] - planet[2]) * planet[1] / ((getDistance(player, planet) ** 2) * 5)
+                player[3] -= (player[1] - planet[3]) * planet[1]*gap*speed / ((getDistance(player, planet) ** 2) * 5)
+                player[2] -= (player[0] - planet[2]) * planet[1]*gap*speed / ((getDistance(player, planet) ** 2) * 5)
     player[1] += player[3] * gap * speed
     return player
 
@@ -196,7 +200,6 @@ def start1(earthX, earthY):
     addPlanet("Planet3.png", 50)
     addPlanet("Planet4.png", 60)
     addPlanet("Earth.png", 100)
-    print(planets)
     planets = importPlanets(planets)
     planets[len(planets) - 1][2] = earthX
     planets[len(planets) - 1][3] = earthY
