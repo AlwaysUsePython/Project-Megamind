@@ -33,6 +33,17 @@ def drawPlayer(x, y):
 def addPlanet(imageName,size):
     planets.append([imageName,size])
 
+def addWormhole(imageName,width,height,x,y,rotation): #x and y are top left points; rotation should be between 0 and 360
+    newWormhole = [imageName,width,height,x,y,rotation]
+    wormholes.append(newWormhole)
+
+def drawWormholes():
+    for wormhole in wormholes:
+        wormholeImg = pygame.image.load(wormhole[0])
+        wormholeImg = pygame.transform.scale(wormholeImg,(wormhole[1],wormhole[2]))
+        wormholeImg = pygame.transform.rotate(wormholeImg,wormhole[5])
+        screen.blit(wormholeImg,(wormhole[3],wormhole[4]))
+
 def importPlanets(planetArray): #planetArray must be a 2d array of planets
     planetLocations = []
     loc = [screenX - 20, screenY -75]  # x position of next planet; gets updated after every planet placement
@@ -148,13 +159,16 @@ def start1():
     global grabbingPlanet
     global lastCursorLoc
     global collided
+    global wormholes
     planets = []
+    wormholes = []
     firstLevel()
     player = [20, (screenY - 150) / 2 - 25, 0, 0]
     addPlanet("Planet1.png",70)
     addPlanet("Planet2.png",40)
     addPlanet("Planet3.png",50)
     addPlanet("Planet4.png",60)
+    addWormhole("wormhole.png",20,100,500,500,0)
     print(planets)
     planets = importPlanets(planets)
     print(planets)
@@ -264,6 +278,7 @@ while not completed:
         else:
             time.sleep(2)
             running = False
+        drawWormholes()
         drawBaby(babyCoords[0], babyCoords[1])
         lastCursorLoc = pygame.mouse.get_pos()
         pygame.display.update()
