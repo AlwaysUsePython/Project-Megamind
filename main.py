@@ -150,7 +150,7 @@ def moveBaby(player, planets, gap, speed):
 
 def drawExplanation1():
     font = pygame.font.Font("freesansbold.ttf", 32)
-    text = font.render("Get the baby to planet Earth!", True, (255, 255, 255))
+    text = font.render("Get the baby to planet Earth in one shot!", True, (255, 255, 255))
     text1 = font.render("Use the spacebar to launch the baby", True, (255, 255, 255))
     text2 = font.render("W and S move the ship on the y axis", True, (255, 255, 255))
     text3 = font.render("Press Space to Continue", True, (200, 200, 200))
@@ -170,7 +170,7 @@ def drawExplanation1():
 
 def drawExplanation2():
     font = pygame.font.Font("freesansbold.ttf", 32)
-    text = font.render("Avoid the asteroids!!", True, (255, 255, 255))
+    text = font.render("You need to curve your one shot around the asteroids!", True, (255, 255, 255))
     text1 = font.render("Planets have gravitational pull.", True, (255, 255, 255))
     text2 = font.render("Use that to your advantage!", True, (255, 255, 255))
     text4 = font.render("Drag the planets onto the screen with your mouse", True, (255, 255, 255))
