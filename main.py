@@ -355,7 +355,7 @@ def detectAsteroidCollision(baby, asteroid):
 
 
 # LEVEL 1
-def start0(earthX, earthY):
+def start0(earthX, earthY, first):
     global planets
     global player
     global prevTime
@@ -370,17 +370,14 @@ def start0(earthX, earthY):
     global collided
     global asteroids
     asteroids = []
-    planets = []
     firstLevel()
-    player = [20, (screenY - 150) / 2 - 25, 0, 0]
-    addPlanet("Planet1.png", 60)
-    addPlanet("Planet2.png", 40)
-    addPlanet("Planet3.png", 50)
-    addPlanet("Planet4.png", 60)
-    addPlanet("Earth.png", 100)
-    planets = importPlanets(planets)
-    planets[len(planets) - 1][2] = earthX
-    planets[len(planets) - 1][3] = earthY
+    if first:
+        planets = []
+        player = [20, (screenY - 150) / 2 - 25, 0, 0]
+        addPlanet("Earth.png", 100)
+        planets = importPlanets(planets)
+        planets[len(planets) - 1][2] = earthX
+        planets[len(planets) - 1][3] = earthY
     prevTime = 0
     currentTime = time.time()
     speed = 100
@@ -398,13 +395,16 @@ finished = False
 
 mainMenu()
 completed = False
+first = True
 while not completed and not finished:
     explained = False
     running = True
     starting = True
     while running:
         if starting:
-            start0(1200, 110)
+            start0(1200, 110, first)
+            if first:
+                first = False
 
         if not collided:
             prevTime = currentTime
@@ -515,7 +515,7 @@ while not completed and not finished:
             running = False
 
 # LEVEL 1
-def start1(earthX, earthY):
+def start1(earthX, earthY, first):
     global planets
     global player
     global prevTime
@@ -531,17 +531,15 @@ def start1(earthX, earthY):
     global asteroids
     asteroids = []
     asteroids.append([580, 100, 40, 250])
-    planets = []
     secondLevel()
     player = [20, (screenY - 150) / 2 - 25, 0, 0]
-    addPlanet("Planet1.png", 60)
-    addPlanet("Planet2.png", 40)
-    addPlanet("Planet3.png", 50)
-    addPlanet("Planet4.png", 60)
-    addPlanet("Earth.png", 100)
-    planets = importPlanets(planets)
-    planets[len(planets) - 1][2] = earthX
-    planets[len(planets) - 1][3] = earthY
+    if first:
+        planets = []
+        addPlanet("Planet1.png", 60)
+        addPlanet("Earth.png", 100)
+        planets = importPlanets(planets)
+        planets[len(planets) - 1][2] = earthX
+        planets[len(planets) - 1][3] = earthY
     prevTime = 0
     currentTime = time.time()
     speed = 100
@@ -556,7 +554,7 @@ def start1(earthX, earthY):
     starting = False
 
 finished = False
-
+first = True
 completed = False
 while not completed and not finished:
     explained = False
@@ -564,7 +562,9 @@ while not completed and not finished:
     starting = True
     while running:
         if starting:
-            start1(1200, 225)
+            start1(1200, 225, first)
+            if first:
+                first = False
 
         if not collided:
             prevTime = currentTime
@@ -678,7 +678,7 @@ while not completed and not finished:
 
 
 # LEVEL 2
-def start2(earthX, earthY):
+def start2(earthX, earthY, first):
     global planets
     global player
     global prevTime
@@ -695,17 +695,16 @@ def start2(earthX, earthY):
     asteroids = []
     asteroids.append([680, 200, 40, 250])
     asteroids.append([200, 0, 40, 250])
-    planets = []
     thirdLevel()
     player = [20, (screenY - 150) / 2 - 25, 0, 0]
-    addPlanet("Planet1.png", 60)
-    addPlanet("Planet2.png", 40)
-    addPlanet("Planet3.png", 50)
-    addPlanet("Planet4.png", 60)
-    addPlanet("Earth.png", 100)
-    print(planets)
-    planets = importPlanets(planets)
-    planets[len(planets) - 1][2] = earthX
+    if first:
+        planets = []
+        addPlanet("Planet1.png", 60)
+        addPlanet("Planet2.png", 40) 
+        addPlanet("Earth.png", 100)
+        print(planets)
+        planets = importPlanets(planets)
+        planets[len(planets) - 1][2] = earthX
     planets[len(planets) - 1][3] = earthY
     prevTime = 0
     currentTime = time.time()
@@ -721,13 +720,16 @@ def start2(earthX, earthY):
     starting = False
 
 completed = False
+first = True
 while not completed and not finished:
     running = True
     starting = True
     explained = False
     while running:
         if starting:
-            start2(1200, 140)
+            start2(1200, 140, first)
+            if first:
+                first = False
 
         if not collided:
             prevTime = currentTime
@@ -778,8 +780,8 @@ while not completed and not finished:
                                                   planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][
                                 1] and planetIndex != grabbedPlanet:
                                 overlap = True
-                        if not overlap:
-                            grabbingPlanet = False
+
+                        grabbingPlanet = False
                     else:
                         for planetIndex in range(len(planets)):
                             if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
@@ -838,177 +840,6 @@ while not completed and not finished:
         if not explained:
             drawExplainScreen()
             drawExplanation2()
-
-        pygame.display.update()
-        if completed:
-            if not quick:
-                time.sleep(1)
-            running = False
-
-
-
-# LEVEL 3
-def start3(earthX, earthY):
-
-    global planets
-    global player
-    global prevTime
-    global currentTime
-    global speed
-    global fired
-    global babyCoords
-    global mousePressed
-    global grabbedPlanet
-    global grabbingPlanet
-    global lastCursorLoc
-    global collided
-    global asteroids
-    asteroids = []
-    asteroids.append([680, 200, 40, 250])
-    asteroids.append([200, 0, 40, 250])
-    planets = []
-    fourthLevel()
-    player = [20, (screenY - 150) / 2 - 25, 0, 0]
-    addPlanet("Planet1.png", 60)
-    addPlanet("Planet2.png", 40)
-    addPlanet("Planet3.png", 50)
-    addPlanet("Planet4.png", 60)
-    addPlanet("Earth.png", 80)
-    print(planets)
-    planets = importPlanets(planets)
-    planets[len(planets) - 1][2] = earthX
-    planets[len(planets) - 1][3] = earthY
-    prevTime = 0
-    currentTime = time.time()
-    speed = 100
-    babyCoords = [-200, -200, 0, 0]
-    fired = False
-    mousePressed = False
-    grabbedPlanet = 0
-    grabbingPlanet = False
-    lastCursorLoc = pygame.mouse.get_pos()
-    collided = False
-    global starting
-    starting = False
-
-completed = False
-while not completed and not finished:
-    running = True
-    starting = True
-    explained = False
-    while running:
-        if starting:
-            start3(1090, 240)
-
-        if not collided:
-            prevTime = currentTime
-            currentTime = time.time()
-            gap = currentTime - prevTime
-
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                    completed = True
-                    quick = True
-                    finished = True
-
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        running = False
-                        completed = True
-                        quick = True
-                        finished = True
-
-                    if event.key == pygame.K_s:
-                        player[3] = 5
-                    if event.key == pygame.K_w:
-                        player[3] = -5
-
-                if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_w or event.key == pygame.K_s:
-                        player[3] = 0
-                    if event.key == pygame.K_SPACE:
-                        if explained and not fired:
-                            fired = True
-                            babyCoords = []
-                            for coord in player:
-                                babyCoords.append(coord)
-                            babyCoords[0] += 75
-                            babyCoords[1] += 25
-                            babyCoords[2] = 5
-                        if not explained:
-                            explained = True
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    mousePressed = True
-                    if grabbingPlanet == True:
-                        overlap = False
-                        for planetIndex in (0, len(planets) - 1, 1):
-                            if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
-                                    planets[planetIndex][2] - lastCursorLoc[0]) + (
-                                                  planets[planetIndex][3] - lastCursorLoc[1]) * (
-                                                  planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][
-                                1] and planetIndex != grabbedPlanet:
-                                overlap = True
-                        if not overlap:
-                            grabbingPlanet = False
-                    else:
-                        for planetIndex in range(len(planets)):
-                            if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
-                                    planets[planetIndex][2] - lastCursorLoc[0]) + (
-                                                  planets[planetIndex][3] - lastCursorLoc[1]) * (
-                                                  planets[planetIndex][3] - lastCursorLoc[1]))) < planets[planetIndex][
-                                1]:
-                                grabbedPlanet = planetIndex
-                                grabbingPlanet = True;
-
-                if event.type == pygame.MOUSEBUTTONUP:
-                    mousePressed = False
-
-            move = player[1] + player[3] * speed * gap
-            if move < 400 and move > 0:
-                player[1] = move
-
-        drawBackground()
-        drawPlanetBarRect()
-        drawPlayer(player[0], player[1])
-        if grabbingPlanet:
-            planets[grabbedPlanet][2] = planets[grabbedPlanet][2] + (pygame.mouse.get_pos()[0] - lastCursorLoc[0])
-            planets[grabbedPlanet][3] = planets[grabbedPlanet][3] + (pygame.mouse.get_pos()[1] - lastCursorLoc[1])
-        for planet in planets:
-            drawPlanet(planet)
-            if detectCollision(babyCoords, planet):
-                if planet[0] == "Earth.png":
-                    completed = True
-                    quick = False
-                collided = True
-
-        for asteroid in asteroids:
-            if detectAsteroidCollision(babyCoords, asteroid):
-                quick = False
-                collided = True
-
-        if not collided:
-            if fired:
-                move = moveBaby(babyCoords, planets, gap, speed)
-                if (move[1] < 430 and move[1] > 0):
-                    babyCoords = move
-                else:
-                    babyCoords = move
-                    collided = True
-                print(babyCoords)
-                if babyCoords[0] >= 1200:
-                    collided = True
-                    quick = False
-        else:
-            time.sleep(1)
-            running = False
-        drawBaby(babyCoords[0], babyCoords[1])
-        lastCursorLoc = pygame.mouse.get_pos()
-        for asteroid in asteroids:
-            drawAsteroid(asteroid)
-        if not explained:
-            drawExplainScreen()
-            drawExplanation3()
 
         pygame.display.update()
         if completed:
