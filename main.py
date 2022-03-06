@@ -229,6 +229,34 @@ def firstLevel():
         pygame.display.update()
 
 
+
+def secondLevel():
+    font = pygame.font.Font("freesansbold.ttf", 32)
+    text = font.render("Level 2", True, (255, 255, 255))
+    text2 = font.render("Press Space to Begin", True, (200, 200, 200))
+    textRect = text.get_rect()
+    textRect.center = (600, 100)
+    textRect2 = text2.get_rect()
+    textRect2.center = (600, 500)
+    inMenu = True
+    while inMenu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                inMenu = False
+
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_ESCAPE:
+                    inMenu = False
+                if event.key == pygame.K_SPACE:
+                    inMenu = False
+        drawBackground()
+        screen.blit(text, textRect)
+        screen.blit(text2, textRect2)
+        drawBigPlanet(600, 300)
+        pygame.display.update()
+
+
+
 def thirdLevel():
     font = pygame.font.Font("freesansbold.ttf", 32)
     text = font.render("Level 3", True, (255, 255, 255))
@@ -446,7 +474,7 @@ def start1(earthX, earthY):
     asteroids = []
     asteroids.append([580, 100, 40, 250])
     planets = []
-    thirdLevel()
+    secondLevel()
     player = [20, (screenY - 150) / 2 - 25, 0, 0]
     addPlanet("Planet1.png", 70)
     addPlanet("Planet2.png", 40)
@@ -471,7 +499,6 @@ def start1(earthX, earthY):
 
 finished = False
 
-mainMenu()
 completed = False
 while not completed and not finished:
     explained = False
@@ -592,32 +619,6 @@ while not completed and not finished:
 
 
 
-def secondLevel():
-    font = pygame.font.Font("freesansbold.ttf", 32)
-    text = font.render("Level 2", True, (255, 255, 255))
-    text2 = font.render("Press Space to Begin", True, (200, 200, 200))
-    textRect = text.get_rect()
-    textRect.center = (600, 100)
-    textRect2 = text2.get_rect()
-    textRect2.center = (600, 500)
-    inMenu = True
-    while inMenu:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                inMenu = False
-
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_ESCAPE:
-                    inMenu = False
-                if event.key == pygame.K_SPACE:
-                    inMenu = False
-        drawBackground()
-        screen.blit(text, textRect)
-        screen.blit(text2, textRect2)
-        drawBigPlanet(600, 300)
-        pygame.display.update()
-
-
 # LEVEL 2
 def start2(earthX, earthY):
     global planets
@@ -637,7 +638,7 @@ def start2(earthX, earthY):
     asteroids.append([680, 200, 40, 250])
     asteroids.append([200, 0, 40, 250])
     planets = []
-    secondLevel()
+    thirdLevel()
     player = [20, (screenY - 150) / 2 - 25, 0, 0]
     addPlanet("Planet1.png", 70)
     addPlanet("Planet2.png", 40)
