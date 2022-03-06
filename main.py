@@ -880,9 +880,11 @@ def start4(earthX, earthY, first):
     global collided
     global asteroids
     asteroids = []
-    asteroids.append([300, 0, 30, 180])
-    asteroids.append([300, 450-180, 30, 180])
-    asteroids.append([580, 205, 40, 40])
+    asteroids.append([280, 0, 30, 160])
+    asteroids.append([280, 290, 30,160])
+    asteroids.append([575, 185, 30, 60])
+    asteroids.append([850, 0, 30, 160])
+    asteroids.append([850, 290, 30, 160])
     fourthLevel()
     player = [20, (screenY - 150) / 2 - 25, 0, 0]
     if first:
