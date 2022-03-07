@@ -589,7 +589,7 @@ def drawExplanation10():
     screen.blit(text3, textRect3)
 
 
-def drawExplanation11():
+def drawExplanation12():
     font = pygame.font.Font("freesansbold.ttf", 32)
     text = font.render("This level is deviously difficult.", True, (255, 255, 255))
     text2 = font.render("Pay attention to portal direction! Good luck!", True, (255, 255, 255))
