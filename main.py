@@ -249,6 +249,8 @@ def mainMenu():
 
 
 def levelSelect():
+    global first
+    first = True
     inLevelSelect = True
     while inLevelSelect:
         drawBackground()
@@ -1489,6 +1491,7 @@ def start12(earthX, earthY, first):
     global collided
     global asteroids
     global wormholes
+    global wormholePairs
     asteroids = []
     asteroids.append([1000, 0, 50, 450])
     wormholePairs = []
@@ -3044,7 +3047,7 @@ while not finished:
         finished = False
         completed = False
         first = True
-        while not completed and not finished:
+        while not completed and not finished and levelIndex == 8:
             teleportCount = 0
             teleportTime = time.time_ns() - 1000000000
             running = True
