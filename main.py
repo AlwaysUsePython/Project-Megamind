@@ -40,7 +40,7 @@ level = [9, "Astral Slide"]
 levels.append(level)
 level = [10, "Tug-o-War"]
 levels.append(level)
-level = [11, "Level"]
+level = [11, "Boomerang"]
 levels.append(level)
 level = [12, "Twist"]
 levels.append(level)
@@ -588,6 +588,20 @@ def drawExplanation10():
     screen.blit(text, textRect)
     screen.blit(text3, textRect3)
 
+def drawExplanation11():
+    font = pygame.font.Font("freesansbold.ttf", 32)
+    text = font.render("Your escape pod will swerve out of control", True, (255, 255, 255))
+    text2 = font.render("It will require a lot of mass to correct it.", True, (255, 255, 255))
+    text3 = font.render("Press Space to Continue", True, (200, 200, 200))
+    textRect = text.get_rect()
+    textRect.center = (600, 210)
+    textRect2 = text2.get_rect()
+    textRect2.center = (600, 300)
+    textRect3 = text3.get_rect()
+    textRect3.center = (600, 390)
+    screen.blit(text, textRect)
+    screen.blit(text2, textRect2)
+    screen.blit(text3, textRect3)
 
 def drawExplanation12():
     font = pygame.font.Font("freesansbold.ttf", 32)
@@ -890,6 +904,35 @@ def tenthLevel():
         screen.blit(text2, textRect2)
         drawBigPlanet(600, 300, 4)
         pygame.display.update()
+
+def eleventhLevel():
+    global finished
+    font = pygame.font.Font("freesansbold.ttf", 32)
+    text = font.render("Level 11", True, (255, 255, 255))
+    text2 = font.render("Press Space to Begin", True, (200, 200, 200))
+    textRect = text.get_rect()
+    textRect.center = (600, 100)
+    textRect2 = text2.get_rect()
+    textRect2.center = (600, 500)
+    inMenu = True
+    while inMenu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                inMenu = False
+                pygame.quit()
+
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_ESCAPE:
+                    inMenu = False
+                    pygame.quit()
+                if event.key == pygame.K_SPACE:
+                    inMenu = False
+        screen.fill((0, 0, 0))
+        screen.blit(text, textRect)
+        screen.blit(text2, textRect2)
+        drawBigPlanet(600, 300, 5)
+        pygame.display.update()
+
 
 def twelfthLevel():
     global finished
@@ -1378,6 +1421,58 @@ def start10(earthX, earthY, first):
     global starting
     starting = False
 
+
+def start11(earthX, earthY, first):
+    global planets
+    global player
+    global prevTime
+    global currentTime
+    global speed
+    global fired
+    global babyCoords
+    global mousePressed
+    global grabbedPlanet
+    global grabbingPlanet
+    global lastCursorLoc
+    global collided
+    global asteroids
+    global wormholes
+    asteroids = []
+    asteroids.append([300, 0, 50, 150])
+    wormholePairs = []
+    if first:
+        player = [20, (screenY - 150) / 2 - 25, 0, 0]
+        eleventhLevel()
+        planets = []
+        addPlanet("Planet1.png", 60)
+        addPlanet("Planet2.png", 60)
+        addPlanet("Planet3.png", 50)
+        addPlanet("Planet4.png", 40)
+        addPlanet("BlackHole.png", 20)
+        addPlanet("Blackhole.png", 20)
+        addPlanet("Earth.png", 50)
+        print(planets)
+        planets = importPlanets(planets)
+        planets[len(planets) - 1][2] = earthX
+        planets[len(planets) - 1][3] = earthY
+        planets[len(planets) - 2][2] = 290
+        planets[len(planets) - 2][3] = 315
+        planets[len(planets) - 3][2] = 490
+        planets[len(planets) - 3][3] = 240
+
+
+    prevTime = 0
+    currentTime = time.time()
+    speed = 100
+    babyCoords = [-200, -200, 0, 0]
+    fired = False
+    mousePressed = False
+    grabbedPlanet = 0
+    grabbingPlanet = False
+    lastCursorLoc = pygame.mouse.get_pos()
+    collided = False
+    global starting
+    starting = False
 
 def start12(earthX, earthY, first):
     global planets
@@ -3192,6 +3287,248 @@ while not finished:
                     else:
                         levelIndex = newIndex
                     running = False
+
+
+    if levelIndex == 11:
+        completed = False
+        first = True
+        while not completed and not finished and levelIndex == 11:
+            running = True
+            starting = True
+            explained = False
+            while running:
+                if starting:
+                    start11(1000, 300, first)
+                    if first:
+                        first = False
+
+                if not collided:
+                    prevTime = currentTime
+                    currentTime = time.time()
+                    gap = currentTime - prevTime
+
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            running = False
+                            completed = True
+                            quick = True
+                            finished = True
+                            pygame.quit()
+
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_ESCAPE:
+                                running = False
+                                completed = True
+                                quick = True
+                                finished = True
+                                pygame.quit()
+
+                            if event.key == pygame.K_s:
+                                player[3] = 5
+                            if event.key == pygame.K_w:
+                                player[3] = -5
+
+                        if event.type == pygame.KEYUP:
+                            if event.key == pygame.K_w or event.key == pygame.K_s:
+                                player[3] = 0
+                            if event.key == pygame.K_SPACE:
+                                if explained and not fired:
+                                    fired = True
+                                    babyCoords = []
+                                    for coord in player:
+                                        babyCoords.append(coord)
+                                    babyCoords[0] += 75
+                                    babyCoords[1] += 25
+                                    babyCoords[2] = 5
+                                if not explained:
+                                    explained = True
+                            if event.key == pygame.K_RETURN:
+                                levelIndex = levelSelect()
+                                running = False
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            mousePressed = True
+                            if grabbingPlanet == True:
+                                overlap = False
+                                for planetIndex in (0, len(planets) - 1, 1):
+                                    if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
+                                            planets[planetIndex][2] - lastCursorLoc[0]) + (
+                                                          planets[planetIndex][3] - lastCursorLoc[1]) * (
+                                                          planets[planetIndex][3] - lastCursorLoc[1]))) < \
+                                            planets[planetIndex][
+                                                1] and planetIndex != grabbedPlanet:
+                                        overlap = True
+
+                                grabbingPlanet = False
+                            else:
+                                for planetIndex in range(len(planets)):
+                                    if (math.sqrt((planets[planetIndex][2] - lastCursorLoc[0]) * (
+                                            planets[planetIndex][2] - lastCursorLoc[0]) + (
+                                                          planets[planetIndex][3] - lastCursorLoc[1]) * (
+                                                          planets[planetIndex][3] - lastCursorLoc[1]))) < \
+                                            planets[planetIndex][
+                                                1]:
+                                        grabbedPlanet = planetIndex
+                                        if planets[planetIndex][0] != "Earth.png" and planets[planetIndex][
+                                            0] != "BlackHole.png":
+                                            grabbingPlanet = True
+
+                        if event.type == pygame.MOUSEBUTTONUP:
+                            mousePressed = False
+
+                    move = player[1] + player[3] * speed * gap
+                    if move < 400 and move > 0:
+                        player[1] = move
+
+                drawBackground()
+                drawPlanetBarRect()
+                drawWormholes()
+                drawPlayer(player[0], player[1])
+
+                if grabbingPlanet:
+                    planets[grabbedPlanet][2] = planets[grabbedPlanet][2] + (
+                                pygame.mouse.get_pos()[0] - lastCursorLoc[0])
+                    planets[grabbedPlanet][3] = planets[grabbedPlanet][3] + (
+                                pygame.mouse.get_pos()[1] - lastCursorLoc[1])
+                for planet in planets:
+                    drawPlanet(planet)
+                    if detectCollision(babyCoords, planet):
+                        if planet[0] == "Earth.png":
+                            completed = True
+                            quick = False
+                        if not collided:
+                            collided = True
+                            if not completed:
+                                pygame.mixer.Sound.play(explosionSound)
+                            initial = time.time()
+
+                for asteroid in asteroids:
+                    if detectAsteroidCollision(babyCoords, asteroid):
+                        quick = False
+                        if not collided:
+                            collided = True
+                            pygame.mixer.Sound.play(explosionSound)
+                            initial = time.time()
+
+                if not collided:
+                    if fired:
+                        move = moveBaby(babyCoords, planets, gap, speed)
+                        if (move[1] < 430 and move[1] > 0):
+                            babyCoords = move
+                        else:
+                            babyCoords = move
+                            if not collided:
+                                collided = True
+                                pygame.mixer.Sound.play(explosionSound)
+                                initial = time.time()
+                        print(babyCoords)
+                        if babyCoords[0] >= 1200:
+                            if not collided:
+                                collided = True
+                                pygame.mixer.Sound.play(explosionSound)
+                                initial = time.time()
+                            quick = False
+                        finalPairIndex = 0
+                        finalWormholeIndex = 0
+                        for pairIndex in range(len(wormholePairs)):
+                            inRange = False
+                            for wormholeIndex in range(len(wormholePairs[pairIndex])):
+                                # newAngle = math.atan(babyCoords[0]/babyCoords[1])
+                                # canTeleport = (wormholePairs[pairIndex][wormholeIndex][5] + 90 > newAngle) and (wormholePairs[pairIndex][wormholeIndex][5] - 90 < newAngle)
+                                # if ((time.time_ns()-teleportTime>100000000)) and not teleportedLastWormhole:
+                                # if (not hasTeleported):
+                                # if (wormholePairs[pairIndex][wormholeIndex][5] + 90 > newAngle) and (wormholePairs[pairIndex][wormholeIndex][5] - 90 < newAngle):
+                                babyX = babyCoords[0]
+                                babyY = babyCoords[1]
+                                topLeftX = wormholePairs[pairIndex][wormholeIndex][3]
+                                topLeftY = wormholePairs[pairIndex][wormholeIndex][4]
+                                angle = math.radians(wormholePairs[pairIndex][wormholeIndex][5])
+                                across = babyX - topLeftX
+                                down = babyY - topLeftY
+                                height = math.cos(angle) * wormholePairs[pairIndex][wormholeIndex][2]
+                                width = math.sin(angle) * wormholePairs[pairIndex][wormholeIndex][2]
+                                if width == 0:
+                                    width = 1
+                                if across == 0:
+                                    across = 1
+                                if height == 0:
+                                    height = 1
+                                if down == 0:
+                                    down = 1
+                                print(wormholePairs[pairIndex][wormholeIndex])
+                                print(across)
+                                print(down)
+                                print(height)
+                                print(width)
+                                # ellipseX = wormholePairs[pairIndex][wormholeIndex][3] + width/2
+                                # ellipseY = wormholePairs[pairIndex][wormholeIndex][4] + height/2
+                                # if ((((babyX-ellipseX/2)*math.cos(angle)+(babyY-ellipseY/2)*math.sin(angle))**2)/(width**2)+(((babyX-ellipseX/2)*math.sin(angle)-(babyY-ellipseY/2)*math.cos(angle))**2)/(height**2)) < 1:
+                                # slope = math.cos(angle)/math.sin(angle)
+                                # if (slope*(babyX-topLeftX)+topLeftY + 20*math.sin(angle) > babyY) \
+                                # and (slope*(babyX-topLeftX)+topLeftY - 20*math.sin(angle) < babyY) \
+                                # and (topLeftY<babyY+15) \
+                                # and (topLeftY + height) > babyCoords[1]+15:
+                                print((across / width) / (down / height))
+                                print(topLeftY)
+                                print(babyY)
+                                print(topLeftY + height)
+                                print((((across / width) / (down / height) > 0.8 and (across / width) / (
+                                        down / height) < 1.2) \
+                                       and (topLeftY < babyY + 30) \
+                                       and (topLeftY + height) > babyY - 30))
+                                if ((babyX + 15 > topLeftX) and (babyY + 15 > topLeftY) and (
+                                        babyX < topLeftX + width + 15) and (babyY < topLeftY + height + 15)):
+                                    if ((not hasTeleported)):
+                                        teleport(wormholePairs[pairIndex], wormholeIndex)
+                                        hasTeleported = True
+                                    inRange = True
+                            if not inRange:
+                                hasTeleported = False
+                    drawBaby(babyCoords[0], babyCoords[1])
+
+
+
+                else:
+                    current = time.time()
+                    if current - initial < 0.5:
+                        if completed:
+                            drawBaby(babyCoords[0], babyCoords[1])
+                        else:
+                            drawExplosion(babyCoords[0], babyCoords[1], 1)
+                    elif current - initial < 1:
+                        if completed:
+                            drawBaby(babyCoords[0], babyCoords[1])
+                        else:
+                            drawExplosion(babyCoords[0], babyCoords[1], 2)
+
+                    elif current - initial < 1.5:
+                        if completed:
+                            drawBaby(babyCoords[0], babyCoords[1])
+                        else:
+                            drawExplosion(babyCoords[0], babyCoords[1], 3)
+
+                    else:
+                        running = False
+
+                lastCursorLoc = pygame.mouse.get_pos()
+                for asteroid in asteroids:
+                    drawAsteroid(asteroid)
+                if not explained:
+                    drawExplainScreen()
+                    drawExplanation11()
+
+                pygame.display.update()
+                if completed:
+                    if not quick:
+                        time.sleep(1)
+                    newIndex = drawEndScreen()
+                    if (newIndex == -1):
+                        levelIndex = levelIndex + 1
+                    else:
+                        levelIndex = newIndex
+                    running = False
+
+        running = True
+
 
     if levelIndex == 12:
         completed = False
