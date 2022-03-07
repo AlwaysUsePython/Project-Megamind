@@ -8,6 +8,7 @@ pygame.init()
 wormholePairs = []
 
 explosionSound = mixer.Sound("ShipExplosion.wav")
+victory = mixer.Sound("VictoryChime.wav")
 
 noDrums = mixer.music.load("ThemeNoDrums.wav")
 mixer.music.play(2)
@@ -35,13 +36,13 @@ level = [7, "Portals"]
 levels.append(level)
 level = [8, "Vertical Jump"]
 levels.append(level)
-level = [9, "Level"]
+level = [9, "Astral Slide"]
 levels.append(level)
-level = [10, "Level"]
+level = [10, "Tug-o-War"]
 levels.append(level)
 level = [11, "Level"]
 levels.append(level)
-level = [12, "Level"]
+level = [12, "Twist"]
 levels.append(level)
 
 playerImg = pygame.image.load("spaceship.png")
@@ -588,7 +589,7 @@ def drawExplanation10():
     screen.blit(text3, textRect3)
 
 
-def drawExplanation11():
+def drawExplanation12():
     font = pygame.font.Font("freesansbold.ttf", 32)
     text = font.render("This level is deviously difficult.", True, (255, 255, 255))
     text2 = font.render("Pay attention to portal direction! Good luck!", True, (255, 255, 255))
@@ -890,7 +891,7 @@ def tenthLevel():
         drawBigPlanet(600, 300, 4)
         pygame.display.update()
 
-def eleventhLevel():
+def twelfthLevel():
     global finished
     font = pygame.font.Font("freesansbold.ttf", 32)
     text = font.render("Level 12", True, (255, 255, 255))
@@ -1377,7 +1378,8 @@ def start10(earthX, earthY, first):
     global starting
     starting = False
 
-def start11(earthX, earthY, first):
+
+def start12(earthX, earthY, first):
     global planets
     global player
     global prevTime
@@ -1393,16 +1395,17 @@ def start11(earthX, earthY, first):
     global asteroids
     global wormholes
     asteroids = []
-    asteroids.append([300, 0, 50, 150])
+    asteroids.append([1000, 0, 50, 450])
     wormholePairs = []
+    addWormhole("Portal.png", 40, 70, 500, 20, 45, 1100, 200, 90)
     if first:
         player = [20, (screenY - 150) / 2 - 25, 0, 0]
-        eleventhLevel()
+        twelfthLevel()
         planets = []
-        addPlanet("Planet1.png", 60)
-        addPlanet("Planet2.png", 60)
-        addPlanet("Planet3.png", 50)
-        addPlanet("Planet4.png", 40)
+        addPlanet("Planet1.png", 100)
+        addPlanet("Planet2.png", 75)
+        addPlanet("Planet3.png", 75)
+        addPlanet("Planet4.png", 75)
         addPlanet("BlackHole.png", 20)
         addPlanet("Blackhole.png", 20)
         addPlanet("Earth.png", 50)
@@ -1410,10 +1413,10 @@ def start11(earthX, earthY, first):
         planets = importPlanets(planets)
         planets[len(planets) - 1][2] = earthX
         planets[len(planets) - 1][3] = earthY
-        planets[len(planets) - 2][2] = 290
-        planets[len(planets) - 2][3] = 315
-        planets[len(planets) - 3][2] = 490
-        planets[len(planets) - 3][3] = 240
+        planets[len(planets) - 2][2] = 600
+        planets[len(planets) - 2][3] = 225
+        planets[len(planets) - 3][2] = 200
+        planets[len(planets) - 3][3] = 330
 
 
     prevTime = 0
@@ -1428,6 +1431,7 @@ def start11(earthX, earthY, first):
     collided = False
     global starting
     starting = False
+
 
 finished = False
 
@@ -1527,6 +1531,7 @@ while not finished:
                     if detectCollision(babyCoords, planet):
                         if planet[0] == "Earth.png":
                             completed = True
+                            pygame.mixer.Sound.play(victory)
                             quick = False
                         if not collided:
                             if planet[0] != "Earth.png":
@@ -1695,6 +1700,7 @@ while not finished:
                     if detectCollision(babyCoords, planet):
                         if planet[0] == "Earth.png":
                             completed = True
+                            pygame.mixer.Sound.play(victory)
                             quick = False
                         if not collided:
                             collided = True
@@ -1868,6 +1874,7 @@ while not finished:
                     if detectCollision(babyCoords, planet):
                         if planet[0] == "Earth.png":
                             completed = True
+                            pygame.mixer.Sound.play(victory)
                             quick = False
                         if not collided:
                             collided = True
@@ -2038,6 +2045,7 @@ while not finished:
                     if detectCollision(babyCoords, planet):
                         if planet[0] == "Earth.png":
                             completed = True
+                            pygame.mixer.Sound.play(victory)
                             quick = False
                         if not collided:
                             collided = True
@@ -2210,6 +2218,7 @@ while not finished:
                     if detectCollision(babyCoords, planet):
                         if planet[0] == "Earth.png":
                             completed = True
+                            pygame.mixer.Sound.play(victory)
                             quick = False
                         if not collided:
                             collided = True
@@ -2385,6 +2394,7 @@ while not finished:
                     if detectCollision(babyCoords, planet):
                         if planet[0] == "Earth.png":
                             completed = True
+                            pygame.mixer.Sound.play(victory)
                             quick = False
                         if not collided:
                             collided = True
@@ -2560,6 +2570,7 @@ while not finished:
                     if detectCollision(babyCoords, planet):
                         if planet[0] == "Earth.png":
                             completed = True
+                            pygame.mixer.Sound.play(victory)
                             quick = False
                         if not collided:
                             collided = True
@@ -2799,6 +2810,7 @@ while not finished:
                     if detectCollision(babyCoords, planet):
                         if planet[0] == "Earth.png":
                             completed = True
+                            pygame.mixer.Sound.play(victory)
                             quick = False
                         if not collided:
                             collided = True
@@ -2989,6 +3001,9 @@ while not finished:
                                     babyCoords[2] = 5
                                 if not explained:
                                     explained = True
+                            if event.key == pygame.K_RETURN:
+                                levelIndex = levelSelect()
+                                running = False
                         if event.type == pygame.MOUSEBUTTONDOWN:
                             mousePressed = True
                             if grabbingPlanet == True:
@@ -3036,6 +3051,7 @@ while not finished:
                     if detectCollision(babyCoords, planet):
                         if planet[0] == "Earth.png":
                             completed = True
+                            pygame.mixer.Sound.play(victory)
                             quick = False
                         if not collided:
                             collided = True
@@ -3177,16 +3193,16 @@ while not finished:
                         levelIndex = newIndex
                     running = False
 
-    if levelIndex == 11:
+    if levelIndex == 12:
         completed = False
         first = True
-        while not completed and not finished and levelIndex == 11:
+        while not completed and not finished and levelIndex == 12:
             running = True
             starting = True
             explained = False
             while running:
                 if starting:
-                    start11(1000, 300, first)
+                    start12(1125, 340, first)
                     if first:
                         first = False
 
@@ -3282,6 +3298,7 @@ while not finished:
                     if detectCollision(babyCoords, planet):
                         if planet[0] == "Earth.png":
                             completed = True
+                            pygame.mixer.Sound.play(victory)
                             quick = False
                         if not collided:
                             collided = True
@@ -3402,7 +3419,7 @@ while not finished:
                     drawAsteroid(asteroid)
                 if not explained:
                     drawExplainScreen()
-                    drawExplanation11()
+                    drawExplanation12()
 
                 pygame.display.update()
                 if completed:
@@ -3523,6 +3540,7 @@ while not finished:
                     if detectCollision(babyCoords, planet):
                         if planet[0] == "Earth.png":
                             completed = True
+                            pygame.mixer.Sound.play(victory)
                             quick = False
                         if not collided:
                             collided = True
@@ -3659,6 +3677,6 @@ while not finished:
                         levelIndex = newIndex
                     running = False
 
-    while levelIndex > 11:
+    while levelIndex > 12:
         levelIndex = levelSelect()
 
