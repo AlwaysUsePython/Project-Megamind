@@ -4,6 +4,9 @@ import math
 from pygame import mixer
 import random
 
+endImg = pygame.image.load("End.png")
+endImg = pygame.transform.scale(endImg, (1200, 600))
+
 pygame.init()
 wormholePairs = []
 
@@ -3873,6 +3876,24 @@ while not finished:
                     running = False
 
     while levelIndex > 12:
+        ending = True
+        while ending:
+            font = pygame.font.Font("freesansbold.ttf", 32)
+            endText = font.render("Hit enter for level select", True, (0, 0, 0))
+            endTextRect = endText.get_rect()
+            endTextRect.center = (300, 500)
+            screen.blit(endImg, (0, 0))
+            screen.blit(endText, endTextRect)
+            pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        pygame.quit()
+                    elif event.key == pygame.K_RETURN:
+                        ending = False
+
         levelIndex = levelSelect()
         running = True
         completed = False
