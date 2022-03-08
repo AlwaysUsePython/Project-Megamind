@@ -1366,6 +1366,7 @@ def start9(earthX, earthY, first):
 
 
 def start10(earthX, earthY, first):
+    global wormholePairs
     global planets
     global player
     global prevTime
@@ -1432,6 +1433,7 @@ def start11(earthX, earthY, first):
     global collided
     global asteroids
     global wormholes
+    global wormholePairs
     asteroids = []
     asteroids.append([300, 0, 50, 150])
     wormholePairs = []
@@ -3315,7 +3317,7 @@ while not finished:
                     drawPlanet(planet)
                     if detectCollision(babyCoords, planet):
                         if planet[0] == "Earth.png":
-                            mixer.Sound.playe(victory)
+                            mixer.Sound.play(victory)
                             completed = True
                             quick = False
                         if not collided:
@@ -3429,7 +3431,7 @@ while not finished:
                     running = False
 
         running = True
-
+        finished = False
 
     if levelIndex == 12:
         completed = False
